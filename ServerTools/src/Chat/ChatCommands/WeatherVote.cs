@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using Random = System.Random;
 
 namespace ServerTools
 {
@@ -17,6 +18,7 @@ namespace ServerTools
             if (!VoteOpen)
             {
                 int _playerCount = ConnectionManager.Instance.ClientCount();
+
                 if (_playerCount >= Players_Online)
                 {
                     string _phrase611;
