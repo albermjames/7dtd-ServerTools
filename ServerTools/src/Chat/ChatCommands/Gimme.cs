@@ -196,6 +196,7 @@ namespace ServerTools
                     sw.WriteLine("        <item item=\"foodRottingFlesh\" secondaryname=\"Rotting Flesh\" min=\"1\" max=\"5\" />");
                 }
                 sw.WriteLine("    </items>");
+                // writeline <zombies></zombies> or entities
                 sw.WriteLine("</Gimme>");
                 sw.Flush();
                 sw.Close();
@@ -307,6 +308,7 @@ namespace ServerTools
                         {
                             int _timeleft = Delay_Between_Uses - _timepassed;
                             string _phrase6;
+
                             if (!Phrases.Dict.TryGetValue(6, out _phrase6))
                             {
                                 _phrase6 = " you can only use /gimme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
@@ -436,19 +438,24 @@ namespace ServerTools
         {
             Log.Out("[SERVERTOOLS] Spawning zombie for player's gimme");
             int _rndZ = random.Next(1, 4);
-            if (_rndZ == 1)
-            {
-                SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} 10 @ 4", _cInfo.entityId), (ClientInfo)null);
-            }
-            if (_rndZ == 2)
-            {
-                SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} 10 @ 9", _cInfo.entityId), (ClientInfo)null);
-            }
-            else
-            {
-                SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} 10 @ 11", _cInfo.entityId), (ClientInfo)null);
-            }
             string _phrase807;
+
+            switch(_rndZ)
+            {
+                case 1:
+                    SdtdConsole.Instance.ExecuteSync(string.Format("se {0} 2", _cInfo.entityId), (ClientInfo)null);
+                    break;
+                case 2:
+                    SdtdConsole.Instance.ExecuteSync(string.Format("se {0} 24", _cInfo.entityId), (ClientInfo)null);
+                    break;
+                case 3:
+                    SdtdConsole.Instance.ExecuteSync(string.Format("se {0} 61", _cInfo.entityId), (ClientInfo)null);
+                    break;
+                default:
+                    SdtdConsole.Instance.ExecuteSync(string.Format("se {0} 91", _cInfo.entityId), (ClientInfo)null);
+                    break;
+            }
+            
             if (!Phrases.Dict.TryGetValue(807, out _phrase807))
             {
                 _phrase807 = "OH NO! How did that get in there? You have received a zombie.";

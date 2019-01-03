@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Data.SQLite;
 using System.IO;
 
@@ -181,6 +182,7 @@ namespace ServerTools
         {
             try
             {
+                // debug here
                 connection.Open();
                 cmd = new SQLiteCommand(_sql, connection);
                 cmd.ExecuteNonQuery();
@@ -188,6 +190,10 @@ namespace ServerTools
             catch (SQLiteException e)
             {
                 Log.Out(string.Format("[ServerTools] SQLiteException in SQLiteDatabase.FastQuery: {0}", e));
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[ServerTools] Exception in SQLiteDatabase.FastQuery: {0}", e));
             }
             connection.Close();
         }

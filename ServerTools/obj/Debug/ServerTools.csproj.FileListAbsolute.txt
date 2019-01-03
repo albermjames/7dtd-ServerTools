@@ -122,3 +122,17 @@ C:\Users\dmust\Documents\GitHub\7dtd-ServerTools-Dev\ServerTools\obj\Debug\Serve
 C:\Users\dmust\Documents\GitHub\7dtd-ServerTools-Dev\ServerTools\obj\Debug\ServerTools.Properties.Resources.resources
 C:\Users\dmust\Documents\GitHub\7dtd-ServerTools-Dev\ServerTools\obj\Debug\ServerTools.csproj.GenerateResource.Cache
 C:\Users\dmust\Documents\GitHub\7dtd-ServerTools-Dev\ServerTools\obj\Debug\ServerTools.dll
+C:\Users\Doders\Desktop\7dtd-ServerTools\bin\Mods\ServerTools\ModInfo.xml
+C:\Users\Doders\Desktop\7dtd-ServerTools\bin\Mods\ServerTools\Changelog.txt
+C:\Users\Doders\Desktop\7dtd-ServerTools\bin\Mods\ServerTools\GeoLiteCity.dat
+C:\Users\Doders\Desktop\7dtd-ServerTools\bin\Mods\ServerTools\ServerTools.dll
+C:\Users\Doders\Desktop\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.csprojAssemblyReference.cache
+C:\Users\Doders\Desktop\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.Properties.Resources.resources
+C:\Users\Doders\Desktop\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.csproj.GenerateResource.cache
+C:\Users\Doders\Desktop\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.csproj.CoreCompileInputs.cache
+C:\Users\Doders\Desktop\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.csproj.CopyComplete
+C:\Users\Doders\Desktop\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.dll
+D:\sdtd-server\Mods\ServerTools\ModInfo.xml
+D:\sdtd-server\Mods\ServerTools\Changelog.txt
+D:\sdtd-server\Mods\ServerTools\GeoLiteCity.dat
+D:\sdtd-server\Mods\ServerTools\ServerTools.dll
