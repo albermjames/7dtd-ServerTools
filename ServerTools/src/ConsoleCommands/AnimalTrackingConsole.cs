@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 
 namespace ServerTools
 {
@@ -8,14 +7,14 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Animal Tracking.";
+            return "[ServerTools] - Enable or disable animal tracking.";
         }
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. AnimalTracking off\n" +
-                   "  2. AnimalTracking on\n" +
-                   "  3. AnimalTracking reset <steamId/entityId/playerName>\n" +
+                   "  1. at off\n" +
+                   "  2. at on\n" +
+                   "  3. at reset <steamId/entityId/playerName>\n" +
                    "1. Turn off animal tracking\n" +
                    "2. Turn on animal tracking\n" +
                    "3. Reset the delay status of a player for the animal tracking command\n";
@@ -23,7 +22,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-AnimalTracking", "animaltracking" };
+            return new string[] { "st-AnimalTracking", "at", "st-at" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -36,80 +35,79 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    Animals.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Animals has been set to off"));
-                    return;
-                }
-                else if (_params[0].ToLower().Equals("on"))
-                {
-                    Animals.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Animals has been set to on"));
-                    return;
-                }
-                else if (_params[0].ToLower().Equals("reset"))
-                {
-                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
-                    if (_cInfo != null)
+                    if (Animals.IsEnabled)
                     {
-                        string _sql = string.Format("SELECT lastAnimals FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        if (_result.Rows.Count != 0)
-                        {
-                            DateTime _lastAnimals;
-                            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastAnimals);
-                            if (_lastAnimals.ToString() != "10/29/2000 7:30:00 AM")
-                            {
-                                _sql = string.Format("UPDATE Players SET lastAnimals = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _cInfo.playerId);
-                                SQL.FastQuery(_sql);
-                                SdtdConsole.Instance.Output("Animal tracking delay reset.");
-                            }
-                        }
-                        else
-                        {
-                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a animal tracking delay to reset.", _params[1]));
-                        }
-                        _result.Dispose();
+                        Animals.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Animal tracking has been set to off"));
+                        return;
                     }
                     else
                     {
-                        if (_params[1].Length != 17)
+                        SdtdConsole.Instance.Output(string.Format("Animal tracking is already off"));
+                        return;
+                    }
+                }
+                else if (_params[0].ToLower().Equals("on"))
+                {
+                    if (!Animals.IsEnabled)
+                    {
+                        Animals.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Animal tracking has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Animal tracking is already off"));
+                        return;
+                    }
+                }
+                else if (_params[0].ToLower().Equals("reset"))
+                {
+                    if (_params[1].ToLower().Equals("all"))
+                    {
+                        for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}.", _params[1]));
-                            return;
+                            string _id = PersistentContainer.Instance.Players.SteamIDs[i];
+                            PersistentPlayer p = PersistentContainer.Instance.Players[_id];
+                            {
+                                PersistentContainer.Instance.Players[_id].LastAnimal = DateTime.Now.AddYears(-1);
+                            }
                         }
-                        string _id = SQL.EscapeString(_params[1]);
-                        string _sql = string.Format("SELECT lastAnimals FROM Players WHERE steamid = '{0}'", _id);
-                        DataTable _result = SQL.TQuery(_sql);
-                        if (_result.Rows.Count != 0)
+                        PersistentContainer.Instance.Save();
+                        SdtdConsole.Instance.Output("Animal tracking delay reset for all players.");
+                    }
+                    else
+                    {
+                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                        if (_cInfo != null)
                         {
-                            DateTime _lastAnimals;
-                            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastAnimals);
-                            if (_lastAnimals.ToString() != "10/29/2000 7:30:00 AM")
-                            {
-                                _sql = string.Format("UPDATE Players SET lastAnimals = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _id);
-                                SQL.FastQuery(_sql);
-                                SdtdConsole.Instance.Output("Animal tracking delay reset.");
-                            }
-                            else
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a animal tracking delay to reset.", _params[1]));
-                            }
+                            PersistentContainer.Instance.Players[_params[1]].LastAnimal = DateTime.Now.AddYears(-1);
+                            PersistentContainer.Instance.Save();
+                            SdtdConsole.Instance.Output(string.Format("Animal tracking delay reset for {0}.", _cInfo.playerName));
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a animal tracking delay to reset.", _params[1]));
+                            if (_params[1].Length != 17)
+                            {
+                                SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}", _params[1]));
+                                return;
+                            }
+                            PersistentContainer.Instance.Players[_params[1]].LastAnimal = DateTime.Now.AddYears(-1);
+                            PersistentContainer.Instance.Save();
+                            SdtdConsole.Instance.Output(string.Format("Animal tracking delay reset for {0}.", _params[1]));
                         }
-                        _result.Dispose();
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AnimalTrackingConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in AnimalTrackingConsole.Execute: {0}", e));
             }
         }
     }

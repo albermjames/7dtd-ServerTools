@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ServerTools.AntiCheat;
 
 namespace ServerTools
 {
@@ -7,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Invalid Item Kicker.";
+            return "[ServerTools] - Enable or disable invalid item kicker.";
         }
         public override string GetHelp()
         {
@@ -19,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-InvalidItemKicker", "invaliditemkicker" };
+            return new string[] { "st-InvalidItemKicker", "iik", "st-iik" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,24 +33,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    InventoryCheck.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Invalid Item Kicker has been set to off"));
-                    return;
+                    if (InvalidItems.IsEnabled)
+                    {
+                        InvalidItems.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Invalid item kicker has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Invalid item kicker is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    InventoryCheck.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Invalid Item Kicker has been set to on"));
-                    return;
+                    if (!InvalidItems.IsEnabled)
+                    {
+                        InvalidItems.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Invalid item kicker has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Invalid item kicker is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in InvalidItemKickerConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in InvalidItemKickerConsole.Execute: {0}", e.Message));
             }
         }
     }

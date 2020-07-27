@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable InfoTicker.";
+            return "[ServerTools]- Enable or disable infoTicker.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-InfoTicker", "infoticker" };
+            return new string[] { "st-InfoTicker", "it", "st-it" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,24 +32,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    InfoTicker.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Info ticker has been set to off"));
-                    return;
+                    if (InfoTicker.IsEnabled)
+                    {
+                        InfoTicker.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("InfoTicker has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("InfoTicker is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    InfoTicker.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Info ticker has been set to on"));
-                    return;
+                    if (!InfoTicker.IsEnabled)
+                    {
+                        InfoTicker.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("InfoTicker has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("InfoTicker is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in InfoTickerConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in InfoTickerConsole.Execute: {0}", e));
             }
         }
     }

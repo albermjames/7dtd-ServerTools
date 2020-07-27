@@ -1,5 +1,4 @@
 /bin/Mods/ServerTools/*.dll
 /ServerTools/obj/Debug
 /ServerTools/obj/Release
-.vscode
-.vs
+

@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Starting Items.";
+            return "[ServerTools] - Enable or disable starting items.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-StartingItems", "startingitems" };
+            return new string[] { "st-StartingItems", "si", "st-si" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,24 +32,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    StartingItems.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Starting Items has been set to off"));
-                    return;
+                    if (StartingItems.IsEnabled)
+                    {
+                        StartingItems.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Starting items has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Starting items is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    StartingItems.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Starting Items has been set to on"));
-                    return;
+                    if (!StartingItems.IsEnabled)
+                    {
+                        StartingItems.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Starting items has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Starting items is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in StartingItemsConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in StartingItemsConsole.Execute: {0}", e.Message));
             }
         }
     }

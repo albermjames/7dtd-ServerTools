@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Travel.";
+            return "[ServerTools] - Enable or disable travel.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Travel", "travel" };
+            return new string[] { "st-Travel", "travel", "st-travel" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,15 +32,33 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    Travel.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Travel has been set to off"));
-                    return;
+                    if (Travel.IsEnabled)
+                    {
+                        Travel.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Travel has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Travel is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    Travel.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Travel has been set to on"));
-                    return;
+                    if (!Travel.IsEnabled)
+                    {
+                        Travel.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Travel has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Travel is already on"));
+                        return;
+                    }
                 }
                 else
                 {
@@ -49,7 +67,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in TravelConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in TravelConsole.Execute: {0}", e.Message));
             }
         }
     }

@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Day7.";
+            return "[ServerTools]- Enable or disable day7.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Day7", "Day7" };
+            return new string[] { "st-Day7", "d7", "st-d7" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,24 +32,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    Day7.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Day 7 has been set to off"));
-                    return;
+                    if (Day7.IsEnabled)
+                    {
+                        Day7.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Day7 has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Day7 is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    Day7.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Day 7 has been set to on"));
-                    return;
+                    if (!Day7.IsEnabled)
+                    {
+                        Day7.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Day7 has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Day7 is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Day7Console.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Day7Console.Execute: {0}", e));
             }
         }
     }

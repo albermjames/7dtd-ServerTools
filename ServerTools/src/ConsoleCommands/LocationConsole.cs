@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Location.";
+            return "[ServerTools] - Enable or disable location.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Location", "location" };
+            return new string[] { "st-Location", "loc", "st-loc" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,24 +32,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    Loc.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Location has been set to off"));
-                    return;
+                    if (Loc.IsEnabled)
+                    {
+                        Loc.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Location has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Location is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    Loc.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Location has been set to on"));
-                    return;
+                    if (!Loc.IsEnabled)
+                    {
+                        Loc.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Location has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Location is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in LocationConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in LocationConsole.Execute: {0}", e.Message));
             }
         }
     }

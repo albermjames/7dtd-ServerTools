@@ -1,5 +1,665 @@
 ﻿CHANGELOG
 
+19.0.4
+Built using Alpha 19 experimental assets
+Functioning with 19 experimental. Untested with other versions
+
+Added option Player_Distance to Battle_Loggers
+Added option Delay_Between_Uses to Scout_Player
+Added console commands to edit BadWords.xml for Bad_Word_Filter
+Fixed multiple admin permission levels not working
+Fixed response when leaving the lobby and market
+Fixed Bloodmoon_Warrior reward payout 
+Fixed console command st-ChatColorPrefix response of param count
+Fixed Chat_Flood_Protection not functioning as intended
+Fixed chat color and prefix applications. Multiple colors supported
+Recommend https://www.w3schools.com/colors/colors_groups.asp
+Changed Shop response on purchase to utilize secondary name
+Updated console command Donor to match changes in the Chat_Color_Prefix
+Disabled Battle_Loggers tool. Under construction
+
+19.0.3
+Built using Alpha 19 experimental assets
+Functioning with 19 experimental. Untested with other versions
+
+Shutdown Shutdown Shutdown Shutdown Shutdown Shutdown
+
+19.0.2
+Built using Alpha 19 experimental assets
+Functioning with 19 experimental. Untested with other versions
+
+Fixed High_Ping_Kicker not functioning. (Thanks Z1NC)
+Fixed Shutdown not running the proper command
+Fixed Restart_Vote completing immediately
+Fixed Restart_Vote not running the proper command
+Fixed console command st-ChatColorPrefix response of param count
+
+19.0.1
+Built using Alpha 19 experimental assets
+Functioning with 19 experimental. Untested with other versions
+
+Added option Alert_Count to Shutdown tool
+Fixed /sethome command not working as intended
+Fixed a static method causing data recall issues after restart
+Fixed Auto_Backup not starting at the set time
+Fixed Auto_Backup leaving one extra save
+Fixed Shutdown tool not starting at the set time
+Fixed missing option for Shutdown tool named Alert_On_Login
+Fixed log out point in damage detection system spamming the log
+Fixed false positive with damage detection system and lock picks
+Fixed Starting_Items reapplying to players after server restart
+Fixed spawning player process due to api error in base game
+Fixed friends chat not functioning properly
+Fixed console command GiveItem
+Fixed console command GiveBlock
+Fixed SecondaryName option in Gimme.xml
+Changed console command shorten versions to reduce clutter
+Changed Starting_Items to run slower, preventing crashes
+Removed tool Stopserver from the config
+
+19.0.0
+Built using Alpha 19 experimental assets
+Functioning with 19 experimental. Untested with other versions
+
+Fixed some internal code for A19 assets
+Fixed Gimme.xml spelling error
+Updated default xml lists to match A19 items and blocks
+
+18.4.11
+Built using Alpha 18.4 stable assets
+Functioning with 18.4 experimental. Untested with other versions
+
+Fixed Spectator_Detector option Admin_Level
+
+18.4.10
+Built using Alpha 18.4 stable assets
+Functioning with 18.4 stable. Untested with other versions
+
+Added anti-cheat tool named Spectator_Detector. Checks for spectator mode
+Added check to Jail tool preventing release to a hostile claimed area
+Added more information to output logs when reporting an xml error
+Added option to Normal_Player_Color_Prefix tool named Prefix_Color
+Added option to Gimme tool named Zombie_Id. Sets the entity id that can spawn
+Added option to ChatColorPrefix.xml named PrefixColor
+Added ability to use color arrays for the name and prefix of chat based tools
+Added phrase 828
+Fixed chat command /reserved displaying the player name twice by default
+Fixed chat command /shutdown time remaining
+Fixed EventTriggers.xml utilizing custom Shop command
+Fixed null ref error from claim check
+Fixed Shop.xml default containing an error
+Fixed process for console command GiveItem All and GiveBlock All
+Fixed Prayer tool. Recommend making new buffs that last longer than the default
+Changed command responses to no longer auto respond with the player name
+Changed Events to allow multiple user setups. Can only run one at a time
+Changed Auto_Shutdown tool name to Shutdown
+Changed Shutdown process to kick players when 30 seconds remain
+Changed Shutdown process to stop players from joining if 1 minute remains
+Changed Shutdown fail safe process to prevent potentially lost data
+Changed Starting_Items code to avoid a potential error or server crash
+Changed Player_Logs to show the item name from the xml instead of localized
+Changed timer system to utilize dedicated threading to help prevent schedules
+from going out of sync under heavy server loads and game bugs
+Changed ChatColorPrefix.xml attribute named Color to NameColor
+Changed many default phrases. Rebuild the file by deleting your original
+Changed multiple of the default clan commands
+Changed some anti-cheat operations to work in conjunction to improve cpu load
+Changed Player_Stat_Check tool name to Player_Stats
+Changed Set_Home tool name to Home
+Removed Player_Name_Color option from Chat_Command_Response
+Removed SQL and recoded effected tools. Linux OS are fully compatible again
+Removed Rate option from Tracking tool. Interval locked to 30 seconds
+Removed Days_Before_Log_Delete from Tracking tool. The log will retain two days
+of player positions. This prevents a over sized bin file and long searches
+Removed Country_Ban tool. This will return in a future version
+*Note* Your ServerTools.db file can be deleted. It is no longer in use
+*Note* It is HIGHLY recommended that you remove old versions of ST before
+installation
+
+18.3.1
+Built using Alpha 18.3 experimental assets
+Functioning with 18.3 stable and 18.3 experimental. Untested with other versions
+
+Added two more null ref checks to damage processing tools
+Fixed AuctionLogs folder missing the last s during the load process
+Fixed passive global chat messages
+Changed console command AutoShutdown off to cancel an initiated shutdown process
+Changed Auction commands to warn the user if Wallet is disabled
+
+18.3.0
+Built using Alpha 18.3 experimental assets
+Functioning with 18.3 stable and 18.3 experimental. Untested with other versions
+
+Added missing console command variants utilizing capitalization
+Added party members to claimed space checks allowing set home and teleports
+Added null ref check to damage processing tools
+Added null ref check to Autoshutdown warning
+Fixed High_Ping_Kicker tool not functioning with the immunity list
+Fixed adding and removing players to the High Ping immunity list through console
+Fixed removing protection from a chunk not on the protected spaces list
+Fixed Auto_Shutdown to work with latest patch
+Fixed Bloodmoon_Warrior being offered to players with no deaths
+Fixed an error in the load process
+Fixed Weather_Vote not starting the first time
+Fixed Hardcore desyncing players when reaching their last death
+Changed claim checks to include friends and allies when applicable
+Changed Flying detection bounds to help prevent false positives
+Changed Flying detection to look for air blocks and terrain only
+Changed version upgrades to update new config file with old settings
+Changed GimmeItems.xml file name to Gimme.xml
+Changed Gimme.xml entries starting with item item to item name
+Changed High_Ping_Kicker option named Samples to Flags. Works the same
+Changed HighPingImmunity.xml entries starting with immune player to Player name
+Changed Auto_Backup option Time_Between_Saves to Delay_Between_Saves
+Changed Entity_Cleanup options. Shifted the last two into extended
+Changed Lobby options. Shifted the last one into extended
+Changed Market options. Shifted the last one into extended
+Changed Waypoints options. Shifted the last two options into extended
+Changed Zones options. Shifted the last two options into extended
+Changed Vehicle_Teleport options. Shift the last four into extended
+Changed Flying name to Flying_Detector
+Updated console commands for Zones
+Updated various xml files to utilize capitalization on elements
+Updated old item names when xml files are generated
+Removed secondary timer system
+
+Known bugs: 
+Battle_Logger causing desync on player disconnect
+Prayer tool does not apply a buff as intended
+Protected Zones and Protected Spaces stay protected when not removed properly
+StartingItems may cause a crash
+
+Initial website developed
+Basic functions:
+-can be accessed via a browser
+-using a port four higher than the control panel
+-!important! Make sure you open this port or the website won't work
+-login using secure passwords
+-view a list of current players
+-kick, ban, mute, jail, reward players from the player list
+-configure and save the xml files
+-list of current ServerTools developers
+-contact links to report bugs, donate or communicate with the devs
+-clients stay logged in for 30 minutes unless they logout
+
+18.2.4
+Built using Alpha 18.3 experimental assets
+Functioning with 18.2 stable and 18.3 experimental
+
+Added auto backups and removal of existing xml on version updates
+Fixed Auto_Backup when using a custom destination. Be careful of system permission
+Fixed Mute tool and responses
+Fixed Chat_Color_Prefix conflicting with Mute tool
+Fixed Zones.xml building the first time with improper examples
+Fixed Zones not working upon entry into a marked zone
+Changed Auto Shutdown to only trigger on non bloodmoon days
+Changed default auto backup folder name to WorldBackup
+Changed Auto_Backup file structure inside the zip to a shortened version
+
+18.2.3
+Built using Alpha 18.3 experimental assets
+Functioning with 18.2 stable and 18.3 experimental
+
+Added auto backup of old config if it exists when installing a new version
+Added Protected_Space. Protects a designated area from taking damage to blocks
+Added option protected to Zone.xml. Zones marked protected can not be damaged
+Added chat command /mute for regular players to mute specific players
+Added EventTrigger # 119 as mutelist
+Added /mute, /unmute and /mutelist to /commands response
+Added console commands to change World_Radius for normal or reserved player
+Fixed Battle_Loggers load process
+Fixed Message_Color not working
+Fixed /shop buy command when purchasing more than the default count
+Fixed /mutevote conflicting with /mute command
+Changed Set_Home_Extended option PvP_Check to Player_Check
+Changed runtime injection method
+Changed Damage_Detector method
+Changed Bloodmoon_Warrior to require the player be level 10 or higher
+Changed Bloodmoon_Warrior to use a reward list called BloodmoonWarrior.xml,
+players get a random item from the list and a death count reduction of one. The 
+players chosen for the event are random
+Changed how /commands response is formed
+Updated phrase file # 814
+Updated HowToSetup.xml file
+Updated console commands to turn on and off tools properly
+Removed logout points from Shop code which were being used for test reports
+Removed /mute command for admins. Use console commands to mute a player entirely
+
+18.2.2
+Built using Alpha 18.3 experimental assets
+Functioning with 18.2 stable and 18.3 experimental
+
+Fixed test points spamming the output log
+Fixed Shop not functioning correctly
+
+18.2.1
+Built using Alpha 18.2 stable assets
+Functioning with 18.2 stable and 18.2 experimental
+
+Added option PvE to Lobby. Players can not hurt each other if in the lobby
+Added option PvE to Market. Players can not hurt each other if in the market
+Added Admin_Level option to Battle_Logger
+Fixed Auto_Backup failing to operate
+Fixed orientation of Battle_Loggers in the config file to match alphabetical order
+Fixed Set_home claim checks not identifying a friend's claimed space
+Changed Zone.xml orientation. Recommend backup, delete and refresh. Reload manually
+Changed Lobby and Market return option to stop working if they leave the space
+Changed Lobby option PvP_Check to Player_Check
+Changed Market option PvP_Check to Player_Check
+Changed zones marked as PvE true to protect the player from PvP damage
+Changed null ref checks in API to help prevent errors
+Changed Battle_Logger method when a player exits the server
+Changed zombie and player check for teleportation based tools. 50 blocks for zombies
+and 100 blocks for players. They must be hostile targets
+Changed Phrase 556,564,819
+*Console command SecureChestAccess is called SecureLootAccess. Mistake in the last change log
+
+18.2.0
+Built using Alpha 18.2 stable assets
+Functioning with 18.2 stable and 18.2 experimental
+
+Added Harmony injection methods to alter assembly after load
+Added Block_Logger. Enable to log the block name and position of each block placed
+Added Battle_Logger. If enabled, players must type /exit to leave the game while near a hostile
+player or they will drop their backpack, belt, equipment or all
+Added Damage_Detector. Catches players doing too much damage from hacks and bans them
+Added console command SecureChestAccess. Allows access to secure chests
+Added console command SecureDoorAccess. Allows access to secure doors
+Added console command SecureVehicleAccess. Allows access to secure vehicles
+Added a death count reduction of one to the player killed inside a zone marked pve and it
+will also reduce the killer's player kill count by one
+Fixed Gimme using the wrong item count for spawn versus chat response
+Fixed the config building with the wrong Bloodmoon_Warrior option named Zombie_Kills
+Changed Zones marked PvE true to give a warning to the player on a PvP attack
+Changed Auto_Backup to retain a max number of saves and delete the rest
+Changed Auto_Backup to use less threads during operation at the cost of overall speed
+Changed Auto_Shutdown message to use whisper instead of global when players connect(oops)
+Changed Reserved_Slots to allow the server to reach max player count. An open slot is not
+needed anymore
+Changed shutdown fail safe repeating every minute to fifteen seconds
+Changed default command to make a purchase from the shop to /shop buy instead of /buy
+Updated phrase 560,802
+Removed #119 from LoadTrigger.xml
+
+18.1.8
+Built using Alpha 18.2 stable assets
+Functioning with 18.2 stable and 18.2 experimental
+
+Added option to Vehicle_Teleport called Distance. Controls how far away the vehicle can be
+Fixed bedroll removal that was added to prevent the original bedroll removal
+Fixed EventTriggers.xml not applying custom trigger words for commands
+Fixed Bloodmoon warrior chat response. It now utilizes the Killed_Zombies value
+
+18.1.7
+Built using Alpha 18.2 experimental assets
+Functioning with 18.1 stable and 18.2 experimental
+
+Added Bloodmoon_Warrior. If players stay the entire bloodmoon, don't leave and kill enough
+zombies, their death record is reduced by one. Can not go lower than 0 deaths
+Added general code clean ups and performance increases
+Added automatic bedroll check when detected dead. If bedroll position matches another player
+it will remove the bedroll itself to prevent respawn issues left by the developer
+Fixed Real_World_Time delay not working properly
+Fixed Lobby tool delay process operating for donors twice
+Fixed console commands for Bounties tool
+Fixed Starting Items spawning without a durability value
+Fixed bug in sqlite database updates causing Hardcore tool to register errors on a player death
+Fixed bug in Hardcore tool using the wrong sqlite format
+Changed Hardcore kick process after hitting the full death count
+Changed Hardcore and Player Reset tools to now remove active claims, friends and saved data
+Changed AutoBackup tool to delete old files based on total found. Set the max allowed
+Changed collision check and general code for chat command /stuck to improve accuracy
+Changed api for new players to use an independant timer and avoid operation over lap
+Changed Flying tool to improve speed and accuracy. Should help prevent false positives
+Changed one internal timer from a quarter second to half second interval
+Changed Auction_Box delay between sales to use minutes instead of hours
+Updated phrase 900
+Update HowToSetup.xml but not the console commands listed in it
+
+18.1.6
+Built using Alpha 18.2 experimental assets
+Functioning with 18.1 stable and 18.2 experimental
+
+Added Flight tool. Detects players flying in the air or colliding with blocks underground
+Added console commands for Bounties tool. Edit, remove or show a list of current bounties
+Added variable {Delay} to Custom_Commands. Ex. {Delay} 60 equals a 60 second delay. You can input
+a maximum of 120 seconds. If no time is entered it will default to 5 seconds
+Added oldDeaths to sql database
+Fixed chat command /score using the most recent hardcore death count instead of the old record
+Fixed Tracking tool not recording correctly
+Fixed Command_Log save folder name to allow file creation
+Changed API Player Login verification process and added fail safe
+
+18.1.5
+Built using Alpha 18.2 experimental assets
+Functioning with 18.1 stable and 18.2 experimental
+
+Added Hardcore tool. Limited lives and can buy extras. Set Optional true so players must turn it on
+Added Prayer tool. Players type /pray and receive one buff from a custom list in Prayers.xml
+Added Scout_Player tool. /scout looks for a nearby hostile player and returns the approx distance
+Added claim check when using waypoint and home teleports 
+Added server shutdown fail safe despite auto shutdown being enabled
+Added equipment check to Invalid_Item_Kicker
+Fixed Wallet, Bank and Wallet option Bank_Transfer needing to be on for basic bank functions
+Fixed Player_Log logging the date for the players health and shifting the stats out of place
+Fixed Player_Log not committing to all players and failing to show the inventory
+Fixed Weather_Vote using the wrong players needed to start the vote
+Fixed Private_Message not working
+Changed Invalid_Item_Kicker to ban the player if they ignore the warnings to drop the item
+Changed some internal tool operations to make them more efficient
+Changed Shop to allow buying a max stack at a time to prevent errors
+Changed EventTrigger.xml 126 to 101 and relabeled it 'buy life'
+Changed EventTrigger.xml 126 to 'pray'
+Changed EventTrigger.xml 127 to 'hardcore on'
+Changed EventTrigger.xml 128 to 'scoutplayer'
+Changed EventTrigger.xml 129 to 'scout'
+Changed chat hook code to prevent repeating messages from Message_Color tool
+Updated phrase 575,817,949
+
+18.1.4
+Built using Alpha 18.1 experimental assets
+Functioning with 18.0 stable and 18.1 experimental
+
+Added Message_Color tool. Controls the color of general messages in chat
+Added Poll tool to the config
+Added option to Chat_Flood_Protection called Wait_Time. The time players wait after spamming
+Added option to Bank called Player_Transfers. Allows player transfers between bank accounts
+Added chat command /clanrequest. Sends a request to join a clan. Only clan owners can accept
+Added chat command /reserved to display the time remaining
+Added trigger clanrequest to slot #45
+Added trigger reserved to slot #69
+Added option to Lobby called Donor_Only. Locks the command to donors
+Added option to Market called Donor_Only. Locks the command to donors
+Added Bicycles, MotorBikes, Jeeps, Gyros as options to Entity_Cleanup
+Added Set_Home_Extended to the config
+Added Wallet_Extended to the config
+Added console commands to delete a clan, a player from a clan or show a list of clans
+Added console commands to cancel, clear an auction or show the list
+Added console command EntityTeleport. Can not be used on players or bags
+Added console command EntityRotate. Can not be used on players. Entity rotates away from the user
+Fixed console command to check a player's wallet value
+Fixed console command to reset player profiles
+Fixed console command response for mute list
+Fixed console command vote reset
+Fixed Auction_Box inserting improper item names, failing to allow cancel or sale later
+Fixed Bank going in to negative values
+Fixed Reserved Slots process
+Fixed Bank bug on deposit
+Fixed Error in New Player que process
+Changed Zone tool. Use multiple commands in the response field separated by ^
+Changed tool name Normal_Player_Name_Coloring to Normal_Player_Chat_Prefix
+Changed Auto_Shutdown to also check for dusk on the day of the bloodmoon and wait if it is
+Changed Weather_Vote tool. Players can only start a new vote once an hour
+Updated phrase #22,970
+Removed option Days_Until_Horde from Auto_Shutdown
+Removed option Days_Until_Horde from Day7
+Removed Hatch_Elevator tool. Redundant after game updates
+Removed View_Distances tool
+Removed Session tool
+Removed phrase #581
+
+18.1.3
+Built using Alpha 18.1 experimental assets
+Functioning with 18.0 stable and 18.1 experimental
+
+Added console command wallet all. Adjusts all online player wallets at the same time
+Fixed using player id in /claninvite to invite players to a clan
+Fixed chat command /market causing stack overflow when command cost was above 0
+Fixed and improved code for Bank deposit and withdrawl
+Fixed Player_Log format and added cosmetic item mods
+Fixed Whisper tool not working. Use the player name or id
+Changed Custom_Command permissions. Each command can turn on or off permission via the xml
+Changed code for Player_Logs improving it and ST no longer needs Allocs Fixes
+Changed Bank tool to no longer have a limit
+Changed Reserved_Slots system to avoid kicking too many people and function better
+Changed code for Auction_Box to clean it up. Takes item from first slot of secure loot
+Removed Reserved_Check option and corresponding chat command /reserved
+Removed phrase 582
+
+18.1.2
+Built using Alpha 18.1 experimental assets
+Functioning with 18.0 stable and 18.1 experimental
+
+Added more data points for delays in custom commands allowing up to 20 commands with delays
+Fixed chat command /claninvite bug that made accepting not work
+Fixed chat command /waysave saving names with a space in it
+Fixed chat command /shop
+Changed EntityCleanup to automatically send backpacks to the surface if detected too low
+Changed fail safe when a hanging server is detected after shutdown. Now forces .exe to close
+Changed Wallet system to calculate properly and blocks negative wallets automatically
+Updated phrase 581,583
+
+18.1.1
+Built using Alpha 18.1 experimental assets
+Functioning with 18.0 stable and 18.1 experimental
+
+Fixed CountryBan null ref log error from clients joining with internal ip
+Fixed RealWorldTime not working
+Fixed /return command for Zones
+Fixed potential error report on player disconnect if they failed to connect initally
+Fixed Zone reminder delay option
+Fixed CustomCommands using ^ to separate multiple responses 
+Fixed Auction purchase not responding correctly
+Fixed Home commands causing errors
+Fixed accepting or declining a clan invitation
+Fixed teleport checks for players and zombies responding in global chat
+Fixed teleport check misreading distance from other players
+Changed internal code for detection of player on player kills
+Changed phrase 701,703,811,814,820
+Changed AutoBackup to use 64bit application, hopefully avoiding max file size complications
+Removed () from automatically applying to the chat color prefix
+
+18.0.3
+Built using Alpha 18 experimental assets
+
+Do not use an old database with this release. You must delete it and start a new one
+
+Added to EntityCleanup verifying entity is spawned
+Added Market to the load notice list displayed on server startup in the log
+Fixed MuteVote allowing voting of an already muted player
+Fixed various bugs with the Clan system
+Fixed Autoshutdown backup process triggering enabled tools
+Fixed Waypoint database error on command use
+Fixed the chat system for applying clan tags, color prefix and normal player color prefix
+Fixed /sethome2 replacing the /sethome location
+Fixed StartingItems error on login
+Fixed SQL error on player respawn
+Fixed AutoBackup error. Compression option is now functioning
+Removed claim check when teleporting to a waypoint
+
+18.0.2
+Built using Alpha 18 experimental assets
+
+Do not use an old database with this release. You must delete it and start a new one
+
+Fixed Auto Backup failure
+Fixed Deathspot tool not working for non reserved players
+Fixed Event tool failing to utilize the database properly
+Fixed SQLiteException from chat operations while in a clan
+Fixed Friend Teleport invitation showing the wrong name in chat
+Fixed default Animal Tracking numbers to avoid improper spawn
+Updated phrase 201,202,203,204,205,628
+Removed Always Show Response option from Animal Tracking
+
+18.0.1
+Built using Alpha 18.0 experimental assets
+Expect some bugs with this release. We have changed a lot of code
+
+Do not use an old database with this release. You must delete them and start a new one
+
+Added option to Set Home allowing home2 to have its own delay or not
+Added quality option to Gimme items. Set the min and max possible in the xml
+Added View_Distances tool. Forces tree distance, view distance and point of view of clients. Allows
+clients to set their own within limits to prevent exploits
+Added missing phrases to the phrase file
+Added old data storage method using serialization to a bin file. Using two methods of data save
+Added Mute tool in the config
+Added Block_Commands option to Mute tool. Blocks a player using commands while muted
+Added fail safe to block muted players from using commands to circumvent chat mute
+Added chat command /auctionlist. Shows the items the current player has in auction
+Fixed various chat responses missing player names and locations
+Fixed Hardcore mode resetting a player upon reaching their last death
+Fixed donation status preventing commands from operating correctly
+Fixed KillNotice.xml not loading correctly
+Changed internal code for phrase system
+Changed phrase 109, 110, 115, 129, 132, 201, 203
+Changed wallet system to be stored in a static manner, allowing admins to change values without altering
+existing player wallets. PVE mode is now calculated with player kills against their total
+Changed some saved data to the old method to help with sql database lockups and busy responses
+Changed High_Ping_Kicker to check ping values every 5 seconds
+Changed counter and messages during shutdown to be red by default
+Updated internal code to function with new framework
+Updated library for zip operations tied to the auto backup tool
+Removed chat response when a command is not valid and now allow it to display. This was blocking other mods
+Removed MySql option. You must use the built in SqLite
+Removed option to announce chat command responses by using the Command_Public. Default !
+Removed Hardcore tool temporarily
+
+13.1
+Added Under_Water tool. Detects if a player is submerged under two blocks of water. Teleports the player to 
+the surface of their location. Helps prevent building under water
+Added options to Hardcore called Maximum_Extra_Lives and Life_Price. Allows players to purchase extra lives but 
+the cost is multiplied by how many they have purchased
+Added to location tool. Using /loc now mentions being inside of a zone
+Added phrase 761
+Fixed missing Bank Transfers option for Wallet tool in config
+Fixed debug log out when using /commands
+Fixed Custom_Commands using whisper responses and failing to apply {EntityId} and other tags
+Fixed improper call for phrase 803 instead of 801
+Fixed Starting_Items spawning items with no quality
+Fixed a few console command help responses
+Fixed when members of a clan use chat and Normal_Player_Color was not applying
+Fixed console command ResetPlayer
+Fixed Hardcore tool reset of players who have run out of lives
+Fixed event chat responses while signing up and operating
+Fixed chat commands permissions for using setlobby and setmarket
+Fixed muted players using /, ! or @ in chat to circumvent and show their chat
+Changed console command KillAll to KillEnt. Works the same as before by removing all zombies and animals
+Changed Entity_Cleanup to remove zombies and animals below bedrock instead of teleport to the surface
+Changed dedicated thread operations to a dynamic operation hooked in to a systems timer
+Updated HowToSetup.xml
+Updated phrase 705,760,802
+Removed Night_Vote tool. Changing your world time can screw up zombie spawning. Pimps need to fix this
+
+13.0
+Added phrase 305,632,633
+Added tool Break_Reminder. If a player goes over the set minutes in a single session, a message will remind them to
+to take a break. You can set the message and time required
+Added tool God_And_Flight_Detector. Set the admin level required to use god mode. Detects flight and no clip users as well
+Added tool Tracking. Set the rate it logs and how many days total. Logs what item is held at the time
+Added option Chest_Checker to Invalid_Item_Kicker. Checks for invalid items in chests, removes them and logs the event
+Added to invalid item detection. It will now log when players are warned to drop an item
+Added option to Wallet named Bank_Transfers. Controls whether players can transfer funds between the bank and wallet
+Added permission levels for Custom_Commands. Specify the custom command and level required in your default serveradmin.xml
+Added console command to trigger a backup. It resets the next scheduled backup to the Time_Between_Saves value
+Added console command teleu. Teleports you underneith a player. Teleports -10 blocks under target unless too low
+Added console command BanPlayer. Similar to the normal ban command but it will remove all existing claims of the player
+Added console commands to reset online players vote reward and all online and offline players
+Added console command kill all. Removes all animals and zombies from the map
+Fixed the default phrase 625 and 933 if the ServerToolsPhrases.xml is missing them
+Fixed sql alteration causing error for some user
+Fixed when a user in a zone marked PvE true is killed. It will only apply the auto penalty to the killer
+Fixed some chat responses
+Fixed clan chat issues
+Fixed friend teleport invitations and acceptance
+Fixed /friend response
+Fixed console commands turning on and off tools
+Fixed Night_Alert not showing in chat
+Fixed some errors caused by stupid player names
+Fixed restart vote not functioning as intended when an admin is online
+Fixed item spawn from purchases creating items with random attachments
+Fixed a few console command help responses
+Changed internal code for Zones, Bounties, Kill_Notice, God_And_Flight_Detector, Death_Spot to respond a bit quicker
+Changed the internal code for the shop purchase
+Changed sql connection code to avoid database lockup
+Changed clan name limit to 2 - 8 characters
+Changed quality limit allowed to be spawned through various tools. Raised to 200 for modifications
+Changed some code for the shutdown process and added a fail safe to try and shutdown again if it does not work
+Changed CustomCommands.xml response to allow unlimited console commands. Separate them by using ^ in between each command
+Updated phrase 108,112,120,606,625,811
+Updated default trigger 89. Changed /list to /playerlist
+Updated HowToSetup.xml
+Removed Underground_Check and Flight_Check tools. God_And_Flight_Detector replaces them
+
+12.95
+Recompiled files
+Fixed /playerlist response to show all player entity id
+Changed clan name limits. They must be 1-8 characters in length. Existing clans are not effected
+
+12.94
+Added a trigger to EventTriggers.xml to control /clanlist
+Added /clanlist to /commands response
+Added two options to Invalid_Item_Kicker called Dev_Items and Hidden_Items. Controls whether items marked as dev or none for 
+CreativeMode are detected without being on the InvalidItems.xml list
+Fixed some clan commands not responding properly
+Fixed a syntax error sometimes seen from a player name
+Fixed /claim responses showing global instead of private
+Fixed Mute_Vote not applying correctly
+Fixed clan messages showing globally
+Fixed Zones option PVE not functioning properly
+Fixed console commands that turn on or off a tool not updating the config file
+Fixed Animal_Tracking not working
+Fixed Bad_Words_Filter preventing the use of capital letters in chat
+Changed some code dealing with item spawn from various tools like gimme or starting items
+Changed default command /clan to /clanchat or /cc for short to avoid conflicts with other clan based commands
+Updated Hatch_Elevator_Detector tool to work again
+
+12.93
+Added option to Player_Stat_Check called Max_Speed. This is the max speed a player can be caught traveling. Adjust it for mods
+Added all entries to the invalid items system that are marked as dev or none for CreativeMode in the items or blocks.xml. These
+are not on the InvalidItems.xml but apply automatically
+Fixed personal messages used in custom commands and removed the default market example due to the Market tool existing
+Fixed some chat responses
+Fixed potential bug when using /animaltracking
+Fixed /clan message responding with the server name instead of the player name that sent it
+Fixed phrase 621
+Changed CustomCommands.xml. Replaced say with global. Command responses you want to be seen by all should start with global
+Changed CustomCommands.xml. Replaced pm with whisper. Command responses you want to be seen by the user only should start with whisper 
+Changed quality check for Shop.xml. It will check for the max quality and limit to it. Helps with mods
+
+12.92
+Fixed /commands response for whisper commands
+Fixed /shop 'category' failing to show the items from that category
+Fixed Autobackup failing if using the default location
+Fixed some chat responses
+
+12.91
+Added Days_Before_Save_Delete option back to AutoBackup
+Fixed dupelog not working correctly
+Fixed /commands response missing the 5th set of commands
+Fixed one console help response
+Fixed commands not responding if custom commands were enabled
+Changed /commands response to not show sections where no commands are enabled
+Removed log out "test 5" when the config file is written
+
+12.9
+Shifted default location of xml files and log files to your dedicated servers installation directory. A new folder called
+ServerTools will be created there with all the files in one place
+Added tool named Logs that has one option to control how many days logs last before they are deleted
+Removed options name Days_Before_Log_Delete from all tools but the Logs tool
+
+12.8
+Added tool named Private_Message. Players can send each other private messages with /pmessage and respond with /rmessage or /pm /rm
+Added tool Custom_Triggers. Creates CustomTriggers.xml. This has every single tool linked in so that admins can change the default
+commands. Example: /gimme could be changed to /banana. Numbers are okay but do not use symbols such as !@#$%^&*. Do not use capital
+letters. Do not repeat entries
+Added option to Auto_Backup for a custom destination save folder. Leave it blank to keep it as the default world save parent directory
+Fixed /wallet response showing globally
+Fixed clan chat repeating based on how many members were in the clan online and sent global
+Fixed Vote_Reward spamming entities if the Weekly_Vote was reached
+Fixed command /waypointsave not working properly
+Fixed FQuery responding as busy by adding a que to the internal operation
+Fixed clan command responses showing global
+Fixed more chat responses
+Fixed one escape string to avoid errors on a database query
+Changed output log responses to reveal more information on errors and xml input issues
+Changed vote times from 30 seconds to 60 so players have more time to vote
+Changed /commands response to show the proper private command if it is changed from the default
+Updated phrase 6,8,109,110,111,115,117,122,527,529,535,536,539,543,550,552,560,561,602,605,606,611,616,618,620,628,702,735,740,776,777,
+778,795,811,815,822,823,900,910,920,927,932,959
+Removed phrase 770,771
+*Note* ServerTools xml files and log files will go to C:/ServerTools by default
+
 12.7
 Fixed more chat responses showing global instead of private
 Fixed friend chat not showing for the sender

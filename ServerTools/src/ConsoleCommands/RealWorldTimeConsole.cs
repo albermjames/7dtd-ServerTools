@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml;
 
 namespace ServerTools
 {
@@ -7,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Real World Time.";
+            return "[ServerTools] - Enable or disable real world time.";
         }
         public override string GetHelp()
         {
@@ -19,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-RealWorldTime", "realworldtime" };
+            return new string[] { "st-RealWorldTime", "rwt", "st-rwt" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,24 +33,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    RealWorldTime.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Real world time has been set to off"));
-                    return;
+                    if (RealWorldTime.IsEnabled)
+                    {
+                        RealWorldTime.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Real world time has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Real world time is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    RealWorldTime.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Real world time has been set to on"));
-                    return;
+                    if (!RealWorldTime.IsEnabled)
+                    {
+                        RealWorldTime.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Real world time has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Real world time is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in RealWorldTimeConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in RealWorldTimeConsole.Execute: {0}", e.Message));
             }
         }
     }

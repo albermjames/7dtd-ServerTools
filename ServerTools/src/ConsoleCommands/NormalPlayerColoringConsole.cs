@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Normal Player Coloring.";
+            return "[ServerTools] - Enable or disable normal player coloring.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-NormalPlayerColoring", "normalplayercoloring" };
+            return new string[] { "st-NormalPlayerColoring", "npc", "st-npc" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,24 +32,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    ChatHook.Normal_Player_Name_Coloring = false;
-                    SdtdConsole.Instance.Output(string.Format("Normal player coloring has been set to off"));
-                    return;
+                    if (ChatHook.Normal_Player_Color_Prefix)
+                    {
+                        ChatHook.Normal_Player_Color_Prefix = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Normal player coloring has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Normal player coloring is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    ChatHook.Normal_Player_Name_Coloring = true;
-                    SdtdConsole.Instance.Output(string.Format("Normal player coloring has been set to on"));
-                    return;
+                    if (ChatHook.Normal_Player_Color_Prefix)
+                    {
+                        ChatHook.Normal_Player_Color_Prefix = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Normal player coloring has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Normal player coloring is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in NormalPlayerColoringConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in NormalPlayerColoringConsole.Execute: {0}", e.Message));
             }
         }
     }

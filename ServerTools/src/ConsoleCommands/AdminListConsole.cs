@@ -7,20 +7,23 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable chat command Admin List.";
+            return "[ServerTools]- Enable or disable chat command admin list.";
         }
+
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. AdminList off\n" +
-                   "  2. AdminList on\n" +
+                   "  1. al off\n" +
+                   "  2. al on\n" +
                    "1. Turn off your admin list\n" +
                    "2. Turn on your admin list\n";
         }
+
         public override string[] GetCommands()
         {
-            return new string[] { "st-AdminList", "adminlist", "al" };
+            return new string[] { "st-AdminList", "al", "st-al" };
         }
+
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
             try
@@ -32,24 +35,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    AdminList.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Admin list has been set to off"));
-                    return;
+                    if (AdminList.IsEnabled)
+                    {
+                        AdminList.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Admin list has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Admin list is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    AdminList.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Admin list has been set to on"));
-                    return;
+                    if (!AdminList.IsEnabled)
+                    {
+                        AdminList.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Admin list has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Admin list is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AdminListConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in AdminListConsole.Execute: {0}", e));
             }
         }
     }

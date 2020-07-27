@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable New Player.";
+            return "[ServerTools] - Enable or disable new player.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-NewPlayer", "newplayer" };
+            return new string[] { "st-NewPlayer", "np", "st-np" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,24 +32,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    NewPlayer.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("New player has been set to off"));
-                    return;
+                    if (NewPlayer.IsEnabled)
+                    {
+                        NewPlayer.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("New player has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("New player is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    NewPlayer.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("New player has been set to on"));
-                    return;
+                    if (!NewPlayer.IsEnabled)
+                    {
+                        NewPlayer.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("New player has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("New player is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in NewPlayerConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in NewPlayerConsole.Execute: {0}", e));
             }
         }
     }

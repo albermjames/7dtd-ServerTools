@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -9,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Lists the currently assembled minibikes.";
+            return "[ServerTools] - Lists the currently assembled minibikes.";
         }
 
         public override string GetHelp()
@@ -21,14 +20,13 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Bikelist", "bikelist", "bl" };
+            return new string[] { "st-Bikelist", "bl", "st-bl" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
             try
             {
-                int _counter = 1;
                 SdtdConsole.Instance.Output("Minibike List:");
                 List<Entity> Entities = GameManager.Instance.World.Entities.list;
                 for (int i = 0; i < Entities.Count; i++)
@@ -44,7 +42,7 @@ namespace ServerTools
                         Entity _attachedPlayer = _entity.AttachedMainEntity;
                         if (_attachedPlayer != null)
                         {
-                            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                            List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
                             for (int j = 0; j < _cInfoList.Count; j++)
                             {
                                 ClientInfo _cInfo = _cInfoList[j];
@@ -52,22 +50,21 @@ namespace ServerTools
                                 {
                                     if (_attachedPlayer.entityId == _cInfo.entityId)
                                     {
-                                        SdtdConsole.Instance.Output(string.Format("#{0}: Id {1}, Located at x {2}  y {3} z {4}, Player {5} is riding this bike.", _counter, _entity.entityId, x, y, z, _cInfo.playerName));
+                                        SdtdConsole.Instance.Output(string.Format("#{0}: Id {1}, Located at x {2}  y {3} z {4}, Player {5} is riding this bike.", i, _entity.entityId, x, y, z, _cInfo.playerName));
                                     }
                                 }
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("#{0}: Id {1}, Located at x {2}  y {3} z {4}.", _counter, _entity.entityId, x, y, z));
+                            SdtdConsole.Instance.Output(string.Format("#{0}: Id {1}, Located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
                         }
-                        _counter++;
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BikeListConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in BikeListConsole.Execute: {0}", e.Message));
             }
         }
     }

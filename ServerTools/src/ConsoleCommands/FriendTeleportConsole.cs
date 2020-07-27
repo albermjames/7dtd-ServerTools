@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Friend Teleport.";
+            return "[ServerTools] - Enable or disable friend teleport.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-FriendTeleport", "friendteleport" };
+            return new string[] { "st-FriendTeleport", "ft", "st-ft" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,24 +32,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    FriendTeleport.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Friend teleport has been set to off"));
-                    return;
+                    if (FriendTeleport.IsEnabled)
+                    {
+                        FriendTeleport.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Friend teleport has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Friend teleport is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    FriendTeleport.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Friend teleport has been set to on"));
-                    return;
+                    if (!FriendTeleport.IsEnabled)
+                    {
+                        FriendTeleport.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Friend teleport has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Friend teleport is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in FriendTeleportConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in FriendTeleportConsole.Execute: {0}", e));
             }
         }
     }

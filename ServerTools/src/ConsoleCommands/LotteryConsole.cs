@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Lottery.";
+            return "[ServerTools] - Enable or disable lottery.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Lottery", "lottery" };
+            return new string[] { "st-Lottery", "lottery", "st-lottery" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,15 +32,33 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    Lottery.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Lottery has been set to off"));
-                    return;
+                    if (Lottery.IsEnabled)
+                    {
+                        Lottery.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Lottery has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Lottery is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    Lottery.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Lottery has been set to on"));
-                    return;
+                    if (!Lottery.IsEnabled)
+                    {
+                        Lottery.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Lottery has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Lottery is already on"));
+                        return;
+                    }
                 }
                 else
                 {

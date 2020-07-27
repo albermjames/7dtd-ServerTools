@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Entity Cleanup.";
+            return "[ServerTools] - Enable or disable entity cleanup.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-EntityCleanup", "entitycleanup" };
+            return new string[] { "st-EntityCleanup", "ec", "st-ec" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,24 +32,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    EntityCleanup.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Entity cleanup has been set to off"));
-                    return;
+                    if (EntityCleanup.IsEnabled)
+                    {
+                        EntityCleanup.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Entity cleanup has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Entity cleanup is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    EntityCleanup.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Entity cleanup has been set to on"));
-                    return;
+                    if (!EntityCleanup.IsEnabled)
+                    {
+                        EntityCleanup.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Entity cleanup has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Entity cleanup is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in EntityCleanupConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in EntityCleanupConsole.Execute: {0}", e));
             }
         }
     }

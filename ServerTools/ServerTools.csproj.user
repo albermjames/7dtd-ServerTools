@@ -1,14 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ReferencePath>C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 12\7dtd-ST-master-V12 Shared\7dtd-ServerTools-Dev\7dtd-binaries\</ReferencePath>
-    <ProjectView>ProjectFiles</ProjectView>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartAction>Program</StartAction>
-    <StartProgram>D:\sdtd-server\7DaysToDieServer.exe</StartProgram>
-    <StartArguments>-logfile 7DaysToDieServer_Data\output_log_dedi.txt -quit -batchmode -nographics -configfile=serverconfig.xml -dedicated</StartArguments>
-    <RemoteDebugEnabled>false</RemoteDebugEnabled>
-    <EnableUnmanagedDebugging>true</EnableUnmanagedDebugging>
+    <ReferencePath>D:\Modding Mods\owncloud\development\7dtd-ServerTools-master-19.0.4\7dtd-binaries\</ReferencePath>
+    <ProjectView>ShowAllFiles</ProjectView>
   </PropertyGroup>
 </Project>

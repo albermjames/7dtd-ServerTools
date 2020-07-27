@@ -8,18 +8,21 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "[ServerTools]-Stops the game server with a warning countdown every minute.";
+            return "[ServerTools] - Starts a countdown with an alert system for the time specified and then stops the server";
         }
 
         public override string GetHelp()
         {
-            return "Usage: stopserver <minutes>\n" +
-                "Usage: stopserver cancel";
+            return "Usage:\n" +
+                "  1. ss <minutes>\n" +
+                "  2. ss cancel\n" +
+                "1. Starts a shutdown process with a countdown for this long\n" +
+                "2. Cancels the shutdown\n";
         }
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-StopServer", "stopserver" };
+            return new string[] { "st-StopServer", "ss", "st-ss" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -33,32 +36,31 @@ namespace ServerTools
                 }
                 if (_params[0] == "cancel")
                 {
-                    if (!StopServer.stopServerCountingDown)
+                    if (!StopServer.CountingDown)
                     {
-                        SdtdConsole.Instance.Output("Stopserver is not running.");
+                        SdtdConsole.Instance.Output("Stopserver is not running");
                     }
                     else
                     {
-                        StopServer.stopServerCountingDown = false;
+                        StopServer.CountingDown = false;
                         StopServer.NoEntry = false;
-                        if (AutoShutdown.IsEnabled)
-                        {
-                            AutoShutdown.ShutdownTime();
-                            Timers._sD = 0;
-                        }
                         Lottery.ShuttingDown = false;
-                        SdtdConsole.Instance.Output("Stopserver has been cancelled.");
+                        if (Shutdown.IsEnabled)
+                        {
+                            Timers._shutdown = 0;
+                        }
+                        SdtdConsole.Instance.Output("Stopserver has been cancelled");
                     }
                 }
                 else
                 {
-                    if (StopServer.stopServerCountingDown)
+                    if (StopServer.CountingDown)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Server is already stopping in {0} mins", Timers._newCount));
+                        SdtdConsole.Instance.Output(string.Format("Server is already set to shutdown"));
                     }
                     else
                     {
-                        if (!int.TryParse(_params[0], out Timers.Stop_Server_Time))
+                        if (!int.TryParse(_params[0], out StopServer.Delay))
                         {
                             SdtdConsole.Instance.Output(string.Format("Invalid time specified: {0}", _params[0]));
                         }
@@ -71,7 +73,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in StopServerConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in StopServerCommandConsole.Execute: {0}", e.Message));
             }
         }
     }

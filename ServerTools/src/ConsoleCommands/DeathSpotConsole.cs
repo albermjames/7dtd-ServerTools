@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Death Spot.";
+            return "[ServerTools] - Enable or disable death spot.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-DeathSpot", "deathspot" };
+            return new string[] { "st-DeathSpot", "ds", "st-ds" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,24 +32,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    DeathSpot.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Death spot has been set to off"));
-                    return;
+                    if (DeathSpot.IsEnabled)
+                    {
+                        DeathSpot.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Death spot has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Death spot is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    DeathSpot.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Death spot has been set to on"));
-                    return;
+                    if (!DeathSpot.IsEnabled)
+                    {
+                        DeathSpot.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Death spot has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Death spot is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in DeathSpotConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in DeathSpotConsole.Execute: {0}", e));
             }
         }
     }

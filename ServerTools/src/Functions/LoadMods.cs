@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using ServerTools.AntiCheat;
+using ServerTools.Website;
 
 namespace ServerTools
 {
@@ -8,83 +9,23 @@ namespace ServerTools
 
         public static void Load()
         {
-            Timers.TimerStart();
-            if (TeleportCheck.IsEnabled)
+            Confirm.Exec();
+            PatchTools.ApplyPatches();
+            if (!Timers.IsRunning)
             {
-                TeleportCheck.DetectionLogsDir();
+                Timers.TimerStart();
             }
-            if (CountryBan.IsEnabled)
+            if (!LoadTriggers.IsRunning)
             {
-                CountryBan.Load();
+                LoadTriggers.Load();
             }
-            if (FlightCheck.IsEnabled)
+            if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen)
             {
-                FlightCheck.DetectionLogsDir();
-            }
-            if (HatchElevator.IsEnabled)
-            {
-                HatchElevator.DetectionLogsDir();
-            }
-            if (PlayerLogs.IsEnabled)
-            {
-                PlayerLogs.PlayerLogsDir();
-            }
-            if (InventoryCheck.IsEnabled)
-            {
-                InventoryCheck.PlayerLogsDir();
-            }
-            if (Report.IsEnabled)
-            {
-                Report.ReportLogsDir();
-            }
-            if (PlayerStatCheck.IsEnabled)
-            {
-                PlayerStatCheck.DetectionLogsDir();
-            }
-            if (UndergroundCheck.IsEnabled)
-            {
-                UndergroundCheck.DetectionLogsDir();
-            }
-            if (Zones.IsEnabled)
-            {
-                Zones.DetectionLogsDir();
-            }
-            if (Bank.IsEnabled)
-            {
-                Bank.CreateFolder();
-            }
-            if (AuctionBox.IsEnabled)
-            {
-                AuctionBox.CreateFolder();
-            }
-            if (Bounties.IsEnabled)
-            {
-                Bounties.CreateFolder();
-            }
-            if (CredentialCheck.IsEnabled)
-            {
-                CredentialCheck.CreateFolder();
-            }
-            if (DupeLog.IsEnabled)
-            {
-                DupeLog.CreateFolder();
-            }
-            PollConsole.CreateFolder();
-            string _sql = "SELECT pollOpen FROM Polls WHERE pollOpen = 'true'";
-            DataTable _result = SQL.TQuery(_sql);
-            if (_result.Rows.Count > 0)
-            {
-                PollConsole.Check();
-            }
-            _result.Dispose();
-            if (ClanManager.IsEnabled)
-            {
-                ClanManager.GetClans();
-                ClanManager.BuildList();
+                Poll.CheckTime();
             }
             if (!ClanManager.IsEnabled)
             {
-                ClanManager.clans.Clear();
+                ClanManager.Clans.Clear();
                 ClanManager.ClanMember.Clear();
             }
             if (!InfoTicker.IsEnabled && InfoTicker.IsRunning)
@@ -102,14 +43,6 @@ namespace ServerTools
             if (!Gimme.IsRunning && Gimme.IsEnabled)
             {
                 Gimme.Load();
-            }
-            if (UndergroundCheck.IsRunning && !UndergroundCheck.IsEnabled)
-            {
-                UndergroundCheck.Unload();
-            }
-            if (!UndergroundCheck.IsRunning && UndergroundCheck.IsEnabled)
-            {
-                UndergroundCheck.Load();
             }
             if (Badwords.IsRunning && !Badwords.IsEnabled)
             {
@@ -191,15 +124,19 @@ namespace ServerTools
             {
                 Motd.Unload();
             }
-            if (InventoryCheck.IsRunning && !InventoryCheck.IsEnabled)
+            if (InvalidItems.IsRunning && !InvalidItems.IsEnabled)
             {
-                InventoryCheck.Unload();
+                InvalidItems.Unload();
             }
-            if (!InventoryCheck.IsRunning && InventoryCheck.IsEnabled)
+            if (!InvalidItems.IsRunning && InvalidItems.IsEnabled)
             {
-                InventoryCheck.Load();
+                InvalidItems.Load();
             }
-            if (HighPingKicker.IsEnabled)
+            if (HighPingKicker.IsRunning && !HighPingKicker.IsEnabled)
+            {
+                HighPingKicker.Unload();
+            }
+            if (!HighPingKicker.IsRunning && HighPingKicker.IsEnabled)
             {
                 HighPingKicker.Load();
             }
@@ -235,17 +172,67 @@ namespace ServerTools
             {
                 ChatColorPrefix.Load();
             }
-            if (MutePlayer.IsEnabled)
+            if (KillNotice.IsRunning && !KillNotice.IsEnabled)
             {
-                MutePlayer.MuteList();
+                KillNotice.Unload();
+            }
+            if (!KillNotice.IsRunning && KillNotice.IsEnabled)
+            {
+                KillNotice.Load();
+            }
+            if (Prayer.IsRunning && !Prayer.IsEnabled)
+            {
+                Prayer.Unload();
+            }
+            if (!Prayer.IsRunning && Prayer.IsEnabled)
+            {
+                Prayer.Load();
+            }
+            if (BloodmoonWarrior.IsRunning && !BloodmoonWarrior.IsEnabled)
+            {
+                BloodmoonWarrior.Unload();
+            }
+            if (!BloodmoonWarrior.IsRunning && BloodmoonWarrior.IsEnabled)
+            {
+                BloodmoonWarrior.Load();
+            }
+            if (ProtectedSpaces.IsRunning && !ProtectedSpaces.IsEnabled)
+            {
+                ProtectedSpaces.Unload();
+            }
+            if (!ProtectedSpaces.IsRunning && ProtectedSpaces.IsEnabled)
+            {
+                ProtectedSpaces.Load();
+            }
+            if (ClanManager.IsEnabled)
+            {
+                ClanManager.ClanList();
+            }
+            if (AuctionBox.IsEnabled)
+            {
+                AuctionBox.AuctionList();
+            }
+            if (Mute.IsEnabled)
+            {
+                Mute.ClientMuteList();
+                Mute.MuteList();
             }
             if (Jail.IsEnabled)
             {
                 Jail.JailList();
             }
-            if (AutoShutdown.IsEnabled)
+            //always load the website last
+            if (WebsiteServer.IsEnabled && !WebsiteServer.DirFound)
             {
-                AutoShutdown.ShutdownTime();
+                WebsiteServer.CheckDir();
+            }
+            if (WebsiteServer.IsRunning && !WebsiteServer.IsEnabled)
+            {
+                WebsiteServer.Unload();
+            }
+            if (!WebsiteServer.IsRunning && WebsiteServer.IsEnabled && WebsiteServer.DirFound)
+            {
+                WebsiteServer.Load();
             }
         }
     }

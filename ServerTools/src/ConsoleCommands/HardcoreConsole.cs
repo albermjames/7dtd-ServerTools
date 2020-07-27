@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Hardcore.";
+            return "[ServerTools] - Enable or disable hardcore.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Hardcore", "hardcore" };
+            return new string[] { "st-Hardcore", "hc", "st-hc" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,15 +32,33 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    Hardcore.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Hardcore has been set to off"));
-                    return;
+                    if (Hardcore.IsEnabled)
+                    {
+                        Hardcore.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Hardcore has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Gimme is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    Hardcore.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Hardcore has been set to on"));
-                    return;
+                    if (!Hardcore.IsEnabled)
+                    {
+                        Hardcore.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Hardcore has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Gimme is already on"));
+                        return;
+                    }
                 }
                 else
                 {
@@ -49,7 +67,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in HardcoreConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in HardcoreConsole.Execute: {0}", e.Message));
             }
         }
     }

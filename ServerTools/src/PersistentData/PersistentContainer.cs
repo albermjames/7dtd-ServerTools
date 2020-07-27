@@ -8,47 +8,22 @@ namespace ServerTools
     [Serializable]
     public class PersistentContainer
     {
-        private static string filepath = string.Format("{0}/ServerTools.bin", GameUtils.GetSaveGameDir());
-        private Players players;
-        private DateTime pollTime;
-        private bool pollOpen;
-        private int eventTime;
-        private int eventPlayerCount;
-        private int eventTeams;
-        private int eventTimeOld;
-        private int eventPlayerCountOld;
-        private int eventTeamsOld;
-        private int pollHours;
-        private int pollYes;
-        private int pollNo;
-        private int lastPollHours;
-        private int lastPollYes;
-        private int lastPollNo;
-        private List<int> polledYes;
-        private List<int> polledNo;
-        private List<string> eventSpawn;
-        private List<string> eventRespawn;
-        private List<string> eventSpawnOld;
-        private List<string> eventRespawnOld;
-        private string pollMessage;
-        private string lastPollMessage;
-        private string eventName;
-        private string eventInvite;
-        private string eventNameOld;
-        private string eventInviteOld;
+        private static string filepath = string.Format("{0}/ServerTools.bin", API.ConfigPath);
         private static PersistentContainer instance;
+        private PersistentPlayers players;
 
-        public Players Players
-        {
-            get
-            {
-                if (players == null)
-                {
-                    players = new Players();
-                }
-                return players;
-            }
-        }
+        private Dictionary<int, List<int>> clientMuteList;
+        private DateTime lastWeather;
+        private string[] pollData;
+        private Dictionary<string[], string> pollOld;
+        private bool pollOpen;
+        private Dictionary<string, bool> pollVote;
+        private List<string[]> track;
+        private Dictionary<string, string[]> websiteAuthorizedList;
+        private Dictionary<string, DateTime> websiteAuthorizedTimeList;
+        private List<string> websiteBanList;
+        private List<string> websiteClientList;
+        private Dictionary<string, DateTime> websiteTimeoutList;
 
         public static PersistentContainer Instance
         {
@@ -59,6 +34,18 @@ namespace ServerTools
                     instance = new PersistentContainer();
                 }
                 return instance;
+            }
+        }
+
+        public PersistentPlayers Players
+        {
+            get
+            {
+                if (players == null)
+                {
+                    players = new PersistentPlayers();
+                }
+                return players;
             }
         }
 
@@ -74,7 +61,7 @@ namespace ServerTools
             stream.Close();
         }
 
-        public static bool Load()
+        public bool Load()
         {
             if (File.Exists(filepath))
             {
@@ -90,10 +77,58 @@ namespace ServerTools
                 }
                 catch (Exception e)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Exception in PersistentContainer.Load: {0}", e));
+                    Log.Out(string.Format("[SERVERTOOLS] Exception in PersistentContainer.Load: {0}", e.Message));
                 }
             }
             return false;
+        }
+
+        public Dictionary<int, List<int>> ClientMuteList
+        {
+            get
+            {
+                return clientMuteList;
+            }
+            set
+            {
+                clientMuteList = value;
+            }
+        }
+
+        public DateTime LastWeather
+        {
+            get
+            {
+                return lastWeather;
+            }
+            set
+            {
+                lastWeather = value;
+            }
+        }
+
+        public string[] PollData
+        {
+            get
+            {
+                return pollData;
+            }
+            set
+            {
+                pollData = value;
+            }
+        }
+
+        public Dictionary<string[], string> PollOld
+        {
+            get
+            {
+                return pollOld;
+            }
+            set
+            {
+                pollOld = value;
+            }
         }
 
         public bool PollOpen
@@ -108,303 +143,87 @@ namespace ServerTools
             }
         }
 
-        public DateTime PollTime
+        public Dictionary<string, bool> PollVote
         {
             get
             {
-                return pollTime;
+                return pollVote;
             }
             set
             {
-                pollTime = value;
+                pollVote = value;
             }
         }
 
-        public int EventTime
+        public List<string[]> Track
         {
             get
             {
-                return eventTime;
+                return track;
             }
             set
             {
-                eventTime = value;
+                track = value;
             }
         }
 
-        public int EventPlayerCount
+        public Dictionary<string, string[]> WebsiteAuthorizedList
         {
             get
             {
-                return eventPlayerCount;
+                return websiteAuthorizedList;
             }
             set
             {
-                eventPlayerCount = value;
+                websiteAuthorizedList = value;
             }
         }
 
-        public int EventTeams
+        public Dictionary<string, DateTime> WebsiteAuthorizedTimeList
         {
             get
             {
-                return eventTeams;
+                return websiteAuthorizedTimeList;
             }
             set
             {
-                eventTeams = value;
+                websiteAuthorizedTimeList = value;
             }
         }
 
-        public int EventTimeOld
+        public List<string> WebsiteBanList
         {
             get
             {
-                return eventTimeOld;
+                return websiteBanList;
             }
             set
             {
-                eventTimeOld = value;
+                websiteBanList = value;
             }
         }
 
-        public int EventPlayerCountOld
+        public List<string> WebsiteClientList
         {
             get
             {
-                return eventPlayerCountOld;
+                return websiteClientList;
             }
             set
             {
-                eventPlayerCountOld = value;
+                websiteClientList = value;
             }
         }
 
-        public int EventTeamsOld
+        public Dictionary<string, DateTime> WebsiteTimeoutList
         {
             get
             {
-                return eventTeamsOld;
+                return websiteTimeoutList;
             }
             set
             {
-                eventTeamsOld = value;
-            }
-        }
-
-        public int PollHours
-        {
-            get
-            {
-                return pollHours;
-            }
-            set
-            {
-                pollHours = value;
-            }
-        }
-
-        public int PollYes
-        {
-            get
-            {
-                return pollYes;
-            }
-            set
-            {
-                pollYes = value;
-            }
-        }
-
-        public int PollNo
-        {
-            get
-            {
-                return pollNo;
-            }
-            set
-            {
-                pollNo = value;
-            }
-        }
-
-        public int LastPollHours
-        {
-            get
-            {
-                return lastPollHours;
-            }
-            set
-            {
-                lastPollHours = value;
-            }
-        }
-
-        public int LastPollYes
-        {
-            get
-            {
-                return lastPollYes;
-            }
-            set
-            {
-                lastPollYes = value;
-            }
-        }
-
-        public int LastPollNo
-        {
-            get
-            {
-                return lastPollNo;
-            }
-            set
-            {
-                lastPollNo = value;
-            }
-        }
-
-        public List<int> PolledYes
-        {
-            get
-            {
-                return polledYes;
-            }
-            set
-            {
-                polledYes = value;
-            }
-        }
-
-        public List<int> PolledNo
-        {
-            get
-            {
-                return polledNo;
-            }
-            set
-            {
-                polledNo = value;
-            }
-        }
-
-        public List<string> EventSpawn
-        {
-            get
-            {
-                return eventSpawn;
-            }
-            set
-            {
-                eventSpawn = value;
-            }
-        }
-
-        public List<string> EventRespawn
-        {
-            get
-            {
-                return eventRespawn;
-            }
-            set
-            {
-                eventRespawn = value;
-            }
-        }
-
-        public List<string> EventSpawnOld
-        {
-            get
-            {
-                return eventSpawnOld;
-            }
-            set
-            {
-                eventSpawnOld = value;
-            }
-        }
-
-        public List<string> EventRespawnOld
-        {
-            get
-            {
-                return eventRespawnOld;
-            }
-            set
-            {
-                eventRespawnOld = value;
-            }
-        }
-
-        public string PollMessage
-        {
-            get
-            {
-                return pollMessage;
-            }
-            set
-            {
-                pollMessage = value;
-            }
-        }
-
-        public string LastPollMessage
-        {
-            get
-            {
-                return lastPollMessage;
-            }
-            set
-            {
-                lastPollMessage = value;
-            }
-        }
-
-        public string EventName
-        {
-            get
-            {
-                return eventName;
-            }
-            set
-            {
-                eventName = value;
-            }
-        }
-
-        public string EventInvite
-        {
-            get
-            {
-                return eventInvite;
-            }
-            set
-            {
-                eventInvite = value;
-            }
-        }
-
-        public string EventNameOld
-        {
-            get
-            {
-                return eventNameOld;
-            }
-            set
-            {
-                eventNameOld = value;
-            }
-        }
-
-        public string EventInviteOld
-        {
-            get
-            {
-                return eventInviteOld;
-            }
-            set
-            {
-                eventInviteOld = value;
+                websiteTimeoutList = value;
             }
         }
     }

@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Bloodmoon alert.";
+            return "[ServerTools] - Enable or disable bloodmoon alert.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Bloodmoon", "bloodmoon" };
+            return new string[] { "st-Bloodmoon", "bm", "st-bm" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,24 +32,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    Bloodmoon.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Bloodmoon has been set to off"));
-                    return;
+                    if (Bloodmoon.IsEnabled)
+                    {
+                        Bloodmoon.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Bloodmoon has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Bloodmoon is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    Bloodmoon.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Bloodmoon has been set to on"));
-                    return;
+                    if (!Bloodmoon.IsEnabled)
+                    {
+                        Bloodmoon.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Bloodmoon has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Bloodmoon is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BloodmoonConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in BloodmoonConsole.Execute: {0}", e.Message));
             }
         }
     }

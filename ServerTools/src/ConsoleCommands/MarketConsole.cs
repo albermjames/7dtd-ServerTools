@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Market.";
+            return "[ServerTools] - Enable or disable market.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Market", "market" };
+            return new string[] { "st-Market", "market", "st-market" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,24 +32,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    MarketChat.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Market has been set to off"));
-                    return;
+                    if (Market.IsEnabled)
+                    {
+                        Market.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Market has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Market is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    MarketChat.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Market has been set to on"));
-                    return;
+                    if (!Market.IsEnabled)
+                    {
+                        Market.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Market has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Market is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in MarketConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in MarketConsole.Execute: {0}", e));
             }
         }
     }

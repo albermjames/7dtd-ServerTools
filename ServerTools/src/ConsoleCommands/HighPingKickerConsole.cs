@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable High Ping Kicker.";
+            return "[ServerTools] - Enable or disable high ping kicker.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-HighPingKicker", "highpingkicker" };
+            return new string[] { "st-HighPingKicker", "hpk", "st-hpk" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,15 +32,33 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    HighPingKicker.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("High ping kicker has been set to off"));
-                    return;
+                    if (HighPingKicker.IsEnabled)
+                    {
+                        HighPingKicker.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("High ping kicker has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("High ping kicker is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    HighPingKicker.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("High ping kicker has been set to on"));
-                    return;
+                    if (!HighPingKicker.IsEnabled)
+                    {
+                        HighPingKicker.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("High ping kicker has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("High ping kicker is already on"));
+                        return;
+                    }
                 }
                 else
                 {
@@ -49,7 +67,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in HighPingKickerConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in HighPingKickerConsole.Execute: {0}", e.Message));
             }
         }
     }

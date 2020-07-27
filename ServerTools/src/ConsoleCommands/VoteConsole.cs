@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Linq;
 
 namespace ServerTools
 {
@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable, Disable, Reset Vote.";
+            return "[ServerTools] - Enable, disable voting. Reset player vote reward delay.";
         }
         public override string GetHelp()
         {
@@ -16,13 +16,17 @@ namespace ServerTools
                    "  1. Vote off\n" +
                    "  2. Vote on\n" +
                    "  3. Vote reset <steamId/entityId/playerName>\n" +
+                   "  4. Vote reset online\n" +
+                   "  5. Vote reset all\n" +
                    "1. Turn off voting\n" +
                    "2. Turn on voting\n" +
-                   "3. Reset the vote reward delay of a player Id\n";
+                   "3. Reset the vote reward delay of a player Id\n" +
+                   "4. Reset the vote reward delay of all online players\n" +
+                   "5. Reset the vote reward delay of all online and offline players\n";
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Vote", "vote" };
+            return new string[] { "st-VoteReward", "vote", "st-vote" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -35,15 +39,33 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    VoteReward.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Underground check has been set to off"));
-                    return;
+                    if (VoteReward.IsEnabled)
+                    {
+                        VoteReward.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Vote reward has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Vote reward is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    VoteReward.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Underground check has been set to on"));
-                    return;
+                    if (!VoteReward.IsEnabled)
+                    {
+                        VoteReward.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Vote reward has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Vote reward is already on"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("reset"))
                 {
@@ -52,68 +74,73 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
-                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
-                    if (_cInfo != null)
+                    if (_params[1].ToLower().Equals("online"))
                     {
-                        string _sql = string.Format("SELECT lastVoteReward FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        if (_result.Rows.Count != 0)
+                        List<ClientInfo> ClientInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                        for (int i = 0; i < ClientInfoList.Count; i++)
                         {
-                            DateTime _lastVoteReward;
-                            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastVoteReward);
-                            if (_lastVoteReward.ToString() != "10/29/2000 7:30:00 AM")
+                            ClientInfo _cInfo2 = ClientInfoList[i];
+                            if (_cInfo2 != null)
                             {
-                                _sql = string.Format("UPDATE Players SET lastVoteReward = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _cInfo.playerId);
-                                SQL.FastQuery(_sql);
-                                SdtdConsole.Instance.Output("Vote reward delay reset.");
-                            }
-                            else
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a Vote reward delay to reset.", _params[1]));
+                                PersistentContainer.Instance.Players[_cInfo2.playerId].LastVote = DateTime.Now.AddYears(-1);
+                                PersistentContainer.Instance.Save();
+                                SdtdConsole.Instance.Output(string.Format("Vote reward delay reset for {0}", _cInfo2.playerName));
                             }
                         }
-                        _result.Dispose();
+                        return;
+                    }
+                    if (_params[1].ToLower().Equals("all"))
+                    {
+                        for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+                        {
+                            string _id = PersistentContainer.Instance.Players.SteamIDs[i];
+                            PersistentPlayer p = PersistentContainer.Instance.Players[_id];
+                            {
+                                PersistentContainer.Instance.Players[_id].LastVote = DateTime.Now.AddYears(-1);
+                            }
+                        }
+                        PersistentContainer.Instance.Save();
+                        SdtdConsole.Instance.Output("Vote reward delay reset for all players");
+                        return;
                     }
                     else
                     {
-                        if (_params[1].Length != 17)
+                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                        if (_cInfo != null)
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}", _params[1]));
-                            return;
-                        }
-                        string _id = SQL.EscapeString(_params[1]);
-                        string _sql = string.Format("SELECT lastVoteReward FROM Players WHERE steamid = '{0}'", _id);
-                        DataTable _result = SQL.TQuery(_sql);
-                        if (_result.Rows.Count != 0)
-                        {
-                            DateTime _lastVoteReward;
-                            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastVoteReward);
-                            if (_lastVoteReward.ToString() != "10/29/2000 7:30:00 AM")
-                            {
-                                _sql = string.Format("UPDATE Players SET lastVoteReward = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _id);
-                                SQL.FastQuery(_sql);
-                                SdtdConsole.Instance.Output("Vote reward delay reset.");
-                            }
-                            else
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a Vote reward delay to reset.", _params[1]));
-                            }
+                            PersistentContainer.Instance.Players[_cInfo.playerId].LastVote = DateTime.Now.AddYears(-1);
+                            PersistentContainer.Instance.Save();
+                            SdtdConsole.Instance.Output(string.Format("Vote reward delay reset for {0}", _cInfo.playerName));
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a Vote reward delay to reset.", _params[1]));
+                            if (_params[1].Length != 17)
+                            {
+                                SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}", _params[1]));
+                                return;
+                            }
+                            PersistentPlayer p = PersistentContainer.Instance.Players[_params[1]];
+                            if (p != null)
+                            {
+                                PersistentContainer.Instance.Players[_params[1]].LastVote = DateTime.Now.AddYears(-1);
+                                PersistentContainer.Instance.Save();
+                                SdtdConsole.Instance.Output(string.Format("Vote reward delay reset for {0}", _params[1]));
+                            }
+                            else
+                            {
+                                SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a Vote reward delay to reset", _params[1]));
+                            }
                         }
-                        _result.Dispose();
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in VotingConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in VotingConsole.Execute: {0}", e.Message));
             }
         }
     }

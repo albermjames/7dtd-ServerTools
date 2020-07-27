@@ -7,17 +7,17 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Enable, Add, Remove and View steamId on the ReservedSlots list.";
+            return "[ServerTools] - Enable, disable, add, remove and view the reserved slots list.";
         }
 
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. reservedslot off\n" +
-                   "  2. reservedslot on\n" +
-                   "  3. reservedslot add <steamId/entityId> <playerName> <days to expire>\n" +
-                   "  4. reservedslot remove <steamId/entityId>\n" +
-                   "  5. reservedslot list\n" +
+                   "  1. reservedslots off\n" +
+                   "  2. reservedslots on\n" +
+                   "  3. reservedslots add <steamId/entityId> <playerName> <days to expire>\n" +
+                   "  4. reservedslots remove <steamId/entityId>\n" +
+                   "  5. reservedslots list\n" +
                    "1. Turn off reserved slots\n" +
                    "2. Turn on reserved slots\n" +
                    "3. Adds a steamID to the Reserved Slots list\n" +
@@ -27,35 +27,53 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-ReservedSlot", "reservedslot", "rs" };
+            return new string[] { "st-ReservedSlots", "rs", "st-rs" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
             try
             {
-                if (_params.Count < 1 || _params.Count > 4)
+                if (_params.Count != 1 && _params.Count != 2 && _params.Count != 4)
                 {
                     SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, 2 or 4, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    ReservedSlots.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Reserved slots has been set to off"));
-                    return;
+                    if (ReservedSlots.IsEnabled)
+                    {
+                        ReservedSlots.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Reserved slots has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Reserved slots is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    ReservedSlots.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Reserved slots has been set to on"));
-                    return;
+                    if (!ReservedSlots.IsEnabled)
+                    {
+                        ReservedSlots.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Reserved slots has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Reserved slots is already on"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("add"))
                 {
                     if (_params.Count != 4)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 4, found {0}.", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 4, found {0}", _params.Count));
                         return;
                     }
                     if (_params[1].Length < 1 || _params[1].Length > 17)
@@ -65,7 +83,7 @@ namespace ServerTools
                     }
                     if (ReservedSlots.Dict.ContainsKey(_params[1]))
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not add Id. {0} is already in the Reserved Slots list.", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("Can not add Id. {0} is already in the Reserved Slots list", _params[1]));
                         return;
                     }
                     double _daysToExpire;
@@ -85,7 +103,7 @@ namespace ServerTools
                     }
                     ReservedSlots.Dict.Add(_params[1], _expireDate);
                     ReservedSlots.Dict1.Add(_params[1], _params[2]);
-                    SdtdConsole.Instance.Output(string.Format("Added Id {0} with the name of {1} that expires on {2} to the Reserved Slots list.", _params[1], _params[2], _expireDate.ToString()));
+                    SdtdConsole.Instance.Output(string.Format("Added Id {0} with the name of {1} that expires on {2} to the Reserved Slots list", _params[1], _params[2], _expireDate.ToString()));
                     ReservedSlots.UpdateXml();
                 }
                 else if (_params[0].ToLower().Equals("remove"))
@@ -105,12 +123,12 @@ namespace ServerTools
                     {
                         if (!ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                         {
-                            SdtdConsole.Instance.Output(string.Format("Id {0} was not found on the Reserved Slots list.", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Id {0} was not found on the Reserved Slots list", _params[1]));
                             return;
                         }
                         ReservedSlots.Dict.Remove(_cInfo.playerId);
                         ReservedSlots.Dict1.Remove(_cInfo.playerId);
-                        SdtdConsole.Instance.Output(string.Format("Removed Id {0} from Reserved Slots list.", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("Removed Id {0} from Reserved Slots list", _params[1]));
                         ReservedSlots.UpdateXml();
                     }
                     else
@@ -119,12 +137,12 @@ namespace ServerTools
                         {
                             ReservedSlots.Dict.Remove(_params[1]);
                             ReservedSlots.Dict1.Remove(_params[1]);
-                            SdtdConsole.Instance.Output(string.Format("Removed Id {0} from Reserved Slots list.", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Removed Id {0} from Reserved Slots list", _params[1]));
                             ReservedSlots.UpdateXml();
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Id {0} was not found on the Reserved Slots list.", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Id {0} was not found on the Reserved Slots list", _params[1]));
                         }
                     }
                 }
@@ -132,12 +150,12 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
                     if (ReservedSlots.Dict.Count == 0)
                     {
-                        SdtdConsole.Instance.Output("There are no players on the Reserved Slots list.");
+                        SdtdConsole.Instance.Output("There are no players on the Reserved Slots list");
                         return;
                     }
                     else
@@ -154,12 +172,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ReservedSlotConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ReservedSlotConsole.Execute: {0}", e.Message));
             }
         }
     }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 
 namespace ServerTools
 {
@@ -9,7 +8,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "[ServerTools]-Mutes a players chat.";
+            return "[ServerTools] - Mutes a players chat.";
         }
         public override string GetHelp()
         {
@@ -26,15 +25,14 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Mute", "mute", string.Empty };
+            return new string[] { "st-Mute", "mute", "st-mute" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
-            if (MutePlayer.IsEnabled)
+            if (Mute.IsEnabled)
             {
                 try
                 {
-
                     if (_params.Count < 1 || _params.Count > 3)
                     {
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 to 3, found {0}.", _params.Count));
@@ -62,27 +60,33 @@ namespace ServerTools
                         ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                         if (_cInfo != null)
                         {
-                            if (MutePlayer.Mutes.Contains(_cInfo.playerId))
+                            if (Mute.Mutes.Contains(_cInfo.playerId))
                             {
                                 SdtdConsole.Instance.Output(string.Format("Steam Id {0}, player name {1} is already muted.", _cInfo.playerId, _cInfo.playerName));
                                 return;
                             }
                             else
                             {
-                                string _sql;
                                 if (_muteTime == -1)
                                 {
-                                    MutePlayer.Mutes.Add(_cInfo.playerId);
-                                    _sql = string.Format("UPDATE Players SET muteTime = -1, playername = '{0}', WHERE steamid = '{1}'", _cInfo.playerName, _cInfo.playerId);
-                                    SQL.FastQuery(_sql);
+                                    Mute.Mutes.Add(_cInfo.playerId);
+                                    PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = -1;
+                                    PersistentContainer.Instance.Players[_cInfo.playerId].MuteName = _cInfo.playerName;
+                                    PersistentContainer.Instance.Players[_cInfo.playerId].MuteDate = DateTime.Now;
+                                    PersistentContainer.Instance.Save();
                                     SdtdConsole.Instance.Output(string.Format("Steam Id {0}, player name {1} has been muted indefinitely.", _cInfo.playerId, _cInfo.playerName));
                                     return;
                                 }
-                                MutePlayer.Mutes.Add(_cInfo.playerId);
-                                _sql = string.Format("UPDATE Players SET muteTime = {0}, playername = '{1}', muteDate = '{2}' WHERE steamid = '{3}'", _muteTime, _cInfo.playerName, DateTime.Now, _cInfo.playerId);
-                                SQL.FastQuery(_sql);
-                                SdtdConsole.Instance.Output(string.Format("Steam Id {0}, player name {1} has been muted for {2} minutes.", _cInfo.playerId, _cInfo.playerName, _muteTime));
-                                return;
+                                else
+                                {
+                                    Mute.Mutes.Add(_cInfo.playerId);
+                                    PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = _muteTime;
+                                    PersistentContainer.Instance.Players[_cInfo.playerId].MuteName = _cInfo.playerName;
+                                    PersistentContainer.Instance.Players[_cInfo.playerId].MuteDate = DateTime.Now;
+                                    PersistentContainer.Instance.Save();
+                                    SdtdConsole.Instance.Output(string.Format("Steam Id {0}, player name {1} has been muted for {2} minutes.", _cInfo.playerId, _cInfo.playerName, _muteTime));
+                                    return;
+                                }
                             }
                         }
                         else
@@ -104,16 +108,16 @@ namespace ServerTools
                             return;
                         }
                         string _id = _params[1];
-                        if (MutePlayer.Mutes.Contains(_id))
+                        if (Mute.Mutes.Contains(_id))
                         {
                             ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_id);
                             if (_cInfo != null)
                             {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you have been unmuted.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have been unmuted.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
-                            MutePlayer.Mutes.Remove(_id);
-                            string _sql = string.Format("UPDATE Players SET muteTime = 0 WHERE steamid = '{0}'", _id);
-                            SQL.FastQuery(_sql);
+                            Mute.Mutes.Remove(_id);
+                            PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = 0;
+                            PersistentContainer.Instance.Save();
                             SdtdConsole.Instance.Output(string.Format("Steam Id {0} has been unmuted.", _id));
                             return;
                         }
@@ -130,48 +134,43 @@ namespace ServerTools
                             SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
                             return;
                         }
-                        if (MutePlayer.Mutes.Count > 0)
-                        {
-                            string _sql = "SELECT steamid, playername, muteTime, muteDate FROM Players WHERE muteTime > 0 OR muteTime = -1";
-                            DataTable _result = SQL.TQuery(_sql);
-                            int _steamid;
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _steamid);
-                            string playername = _result.Rows[0].ItemArray.GetValue(1).ToString();
-                            int _muteTime;
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out _muteTime);
-                            DateTime _muteDate;
-                            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _muteDate);
-                            _result.Dispose();
-                            if (_muteTime == -1)
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Steam id {0}, player name {1} is muted indefinitely", _steamid, playername));
-                                return;
-                            }
-                            if (_muteTime > 0)
-                            {
-                                TimeSpan varTime = DateTime.Now - _muteDate;
-                                double fractionalMinutes = varTime.TotalMinutes;
-                                int _timepassed = (int)fractionalMinutes;
-                                int _timeleft = _muteTime - _timepassed;
-                                SdtdConsole.Instance.Output(string.Format("Steam id {0}, player name {1} for {2} minutes", _steamid, playername, _timeleft));
-                                return;
-                            }
-                        }
-                        else
+                        if (Mute.Mutes.Count == 0)
                         {
                             SdtdConsole.Instance.Output(string.Format("No players are muted."));
                             return;
                         }
+                        else
+                        {
+                            for (int i = 0; i < Mute.Mutes.Count; i++)
+                            {
+                                string _id = Mute.Mutes[i];
+                                int _muteTime = PersistentContainer.Instance.Players[_id].MuteTime;
+                                string _muteName = PersistentContainer.Instance.Players[_id].MuteName;
+                                if (_muteTime > 0)
+                                {
+                                    DateTime _muteDate = PersistentContainer.Instance.Players[_id].MuteDate;
+                                    TimeSpan varTime = DateTime.Now - _muteDate;
+                                    double fractionalMinutes = varTime.TotalMinutes;
+                                    int _timepassed = (int)fractionalMinutes;
+                                    int _timeleft = _muteTime - _timepassed;
+                                    SdtdConsole.Instance.Output(string.Format("Muted player: steam Id {0} named {1} for {2} more minutes.", _id, _muteName, _timeleft));
+                                }
+                                else if (_muteTime == -1)
+                                {
+                                    SdtdConsole.Instance.Output(string.Format("Muted player: steam Id {0} named {1} forever.", _id, _muteName));
+                                }
+                            }
+                        }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                         return;
                     }
                 }
                 catch (Exception e)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in ConsoleCommandMuteConsole.Run: {0}.", e));
+                    Log.Out(string.Format("[SERVERTOOLS] Error in ConsoleCommandMuteConsole.Execute: {0}", e.Message));
                 }
             }
             else

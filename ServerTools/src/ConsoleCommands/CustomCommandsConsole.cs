@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Custom Commands.";
+            return "[ServerTools] - Enable or disable custom commands.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-CustomCommands", "customcommands" };
+            return new string[] { "st-CustomCommands", "cc", "st-cc" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,24 +32,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    CustomCommands.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Custom commands has been set to off"));
-                    return;
+                    if (CustomCommands.IsEnabled)
+                    {
+                        CustomCommands.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Custom commands has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Credentials is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    CustomCommands.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Custom commands has been set to on"));
-                    return;
+                    if (!CustomCommands.IsEnabled)
+                    {
+                        CustomCommands.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Custom commands has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Credentials is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommandsConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommandsConsole.Execute: {0}", e));
             }
         }
     }

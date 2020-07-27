@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Mute Vote.";
+            return "[ServerTools] - Enable or disable mute vote.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-MuteVote", "mutevote" };
+            return new string[] { "st-MuteVote", "mv", "st-mv" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,24 +32,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    MuteVote.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Mute vote has been set to off"));
-                    return;
+                    if (MuteVote.IsEnabled)
+                    {
+                        MuteVote.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Mute vote has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Mute vote is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    MuteVote.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Mute vote has been set to on"));
-                    return;
+                    if (!MuteVote.IsEnabled)
+                    {
+                        MuteVote.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Mute vote has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Mute vote is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in MuteVoteConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in MuteVoteConsole.Execute: {0}", e.Message));
             }
         }
     }

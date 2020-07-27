@@ -7,49 +7,141 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Bad Word Filter.";
+            return "[ServerTools] - Enable, disable, edit the bad word filter.";
         }
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. BadWordFilter off\n" +
-                   "  2. BadWordFilter on\n" +
+                   "  1. bwf off\n" +
+                   "  2. bwf on\n" +
+                   "  3. bwf add <word>\n" +
+                   "  4. bwf remove <word>\n" +
+                   "  5. bwf list\n" +
                    "1. Turn off the bad word filter\n" +
-                   "2. Turn on the bad word filter\n";
+                   "2. Turn on the bad word filter\n" +
+                   "3. Add a word to the list\n" +
+                   "4. Remove a word from the list\n" +
+                   "5. Shows a list of the current bad word filters\n";
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-BadWordFilter", "badwordfilter" };
+            return new string[] { "st-BadWordFilter", "bwf", "st-bwf" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
             try
             {
-                if (_params.Count != 1)
-                {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
-                    return;
-                }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    Badwords.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Bad word filter has been set to off"));
-                    return;
+                    if (_params.Count != 1)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        return;
+                    }
+                    if (Badwords.IsEnabled)
+                    {
+                        Badwords.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Bad word filter has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Bad word filter is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    Badwords.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Bad word filter has been set to on"));
-                    return;
+                    if (_params.Count != 1)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        return;
+                    }
+                    if (!Badwords.IsEnabled)
+                    {
+                        Badwords.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Bad word filter has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Bad word filter is already on"));
+                        return;
+                    }
+                }
+                else if (_params[0].ToLower().Equals("add"))
+                {
+                    if (_params.Count < 2)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected more than 2, found {0}", _params.Count));
+                        return;
+                    }
+                    _params.RemoveAt(0);
+                    string _word = _params.ToString().ToLower();
+                    if (Badwords.Words.Contains(_word))
+                    {
+                        Badwords.Words.Add(_word);
+                        SdtdConsole.Instance.Output(string.Format("Added bad word to the list: {0}", _word));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output("Could not add entry. Bad word already found");
+                        return;
+                    }
+                }
+                else if (_params[0].ToLower().Equals("remove"))
+                {
+                    if (_params.Count < 2)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected more than 2, found {0}", _params.Count));
+                        return;
+                    }
+                    _params.RemoveAt(0);
+                    string _word = _params.ToString().ToLower();
+                    if (Badwords.Words.Contains(_word))
+                    {
+                        Badwords.Words.Remove(_word);
+                        SdtdConsole.Instance.Output(string.Format("Removed bad word from the list: {0}", _word));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output("Could not remove entry. Bad word not found");
+                        return;
+                    }
+                }
+                else if (_params[0].ToLower().Equals("list"))
+                {
+                    if (_params.Count != 1)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        return;
+                    }
+                    if (Badwords.Words.Count > 0)
+                    {
+                        for (int i = 0; i < Badwords.Words.Count; i++)
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Bad word: {0}", Badwords.Words[i]));
+                        }
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output("No entries were found on the bad word filter list");
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BadWordFilterConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in BadWordFilterConsole.Execute: {0}", e.Message));
             }
         }
     }

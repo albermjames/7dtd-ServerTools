@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ServerTools.AntiCheat;
 
 namespace ServerTools
 {
@@ -7,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Dupe Log.";
+            return "[ServerTools] - Enable or disable dupe log.";
         }
         public override string GetHelp()
         {
@@ -19,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-DupeLog", "dupelog" };
+            return new string[] { "st-DupeLog", "dl", "st-dl" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,24 +33,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    DupeLog.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Dupe log has been set to off"));
-                    return;
+                    if (DupeLog.IsEnabled)
+                    {
+                        DupeLog.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Dupe log has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Dupe log is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    DupeLog.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Dupe log has been set to on"));
-                    return;
+                    if (!DupeLog.IsEnabled)
+                    {
+                        DupeLog.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Dupe log has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Dupe log is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in DupeLogConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in DupeLogConsole.Execute: {0}", e));
             }
         }
     }

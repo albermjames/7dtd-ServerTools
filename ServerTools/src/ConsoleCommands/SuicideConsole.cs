@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Suicide.";
+            return "[ServerTools] - Enable or disable suicide.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Suicide", "suicide" };
+            return new string[] { "st-Suicide", "suicide", "st-suicide" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,15 +32,33 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    Suicide.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Suicide has been set to off"));
-                    return;
+                    if (Suicide.IsEnabled)
+                    {
+                        Suicide.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Suicide has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Suicide is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    Suicide.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Suicide has been set to on"));
-                    return;
+                    if (!Suicide.IsEnabled)
+                    {
+                        Suicide.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Suicide has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Suicide is already on"));
+                        return;
+                    }
                 }
                 else
                 {
@@ -49,7 +67,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in SuicideConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in SuicideConsole.Execute: {0}", e.Message));
             }
         }
     }

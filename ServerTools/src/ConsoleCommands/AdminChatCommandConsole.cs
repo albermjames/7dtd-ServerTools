@@ -3,24 +3,27 @@ using System.Collections.Generic;
 
 namespace ServerTools
 {
-    class AdminChatCommandConsole : ConsoleCmdAbstract
+    class AdminChatCommandsConsole : ConsoleCmdAbstract
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Admin Chat Commands.";
+            return "[ServerTools] - Enable or disable admin chat commands.";
         }
+
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. AdminChatCommand off\n" +
-                   "  2. AdminChatCommand on\n" +
+                   "  1. acc off\n" +
+                   "  2. acc on\n" +
                    "1. Turn off server admin chat commands\n" +
                    "2. Turn on server admin chat commands\n";
         }
+
         public override string[] GetCommands()
         {
-            return new string[] { "st-AdminChatCommand", "adminchatcommand" };
+            return new string[] { "st-AdminChatCommands", "acc", "st-acc" };
         }
+
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
             try
@@ -32,24 +35,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    AdminChat.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Admin chat command has been set to off"));
-                    return;
+                    if (AdminChat.IsEnabled)
+                    {
+                        AdminChat.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Admin chat commands has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Admin chat is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    AdminChat.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Admin chat command has been set to on"));
-                    return;
+                    if (!AdminChat.IsEnabled)
+                    {
+                        AdminChat.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Admin chat commands has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Admin chat is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AdminChatCommandConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in AdminChatCommandsConsole.Execute: {0}", e));
             }
         }
     }

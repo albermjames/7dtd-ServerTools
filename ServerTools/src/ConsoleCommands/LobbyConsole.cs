@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Sets the lobby location.";
+            return "[ServerTools] - Set, turn on or turn off the lobby.";
         }
 
         public override string GetHelp()
@@ -24,7 +24,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Lobby", "lobby" };
+            return new string[] { "st-Lobby", "lobby", "st-lobby" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -33,20 +33,38 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    LobbyChat.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Lobby has been set to off"));
-                    return;
+                    if (Lobby.IsEnabled)
+                    {
+                        Lobby.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Lobby has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Lobby is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    LobbyChat.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Lobby has been set to on"));
-                    return;
+                    if (!Lobby.IsEnabled)
+                    {
+                        Lobby.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Lobby has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Lobby is already on"));
+                        return;
+                    }
                 }
                 else if (_params[0] == ("set"))
                 {
@@ -57,25 +75,25 @@ namespace ServerTools
                     int y = (int)_position.y;
                     int z = (int)_position.z;
                     string _lposition = x + "," + y + "," + z;
-                    SetLobby.Lobby_Position = _lposition;
+                    Lobby.Lobby_Position = _lposition;
                     string _phrase551;
                     if (!Phrases.Dict.TryGetValue(551, out _phrase551))
                     {
-                        _phrase551 = "{PlayerName} you have set the lobby position as {LobbyPosition}.";
+                        _phrase551 = "{PlayerName} you have set the lobby position as {LobbyPosition}";
                     }
                     _phrase551 = _phrase551.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase551 = _phrase551.Replace("{LobbyPosition}", _lposition);
                     SdtdConsole.Instance.Output(string.Format("{0}", _phrase551));
-                    LoadConfig.UpdateXml();
+                    LoadConfig.WriteXml();
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in CommandJailConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in CommandJailConsole.Execute: {0}", e.Message));
             }
         }
     }

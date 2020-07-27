@@ -7,8 +7,9 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Bad Word Filter.";
+            return "[ServerTools] - Enable or disable bank.";
         }
+
         public override string GetHelp()
         {
             return "Usage:\n" +
@@ -17,10 +18,12 @@ namespace ServerTools
                    "1. Turn off the bank\n" +
                    "2. Turn on the bank\n";
         }
+
         public override string[] GetCommands()
         {
-            return new string[] { "st-Bank", "bank" };
+            return new string[] { "st-Bank", "bank", "st-bank" };
         }
+
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
             try
@@ -32,24 +35,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    Bank.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Bank has been set to off"));
-                    return;
+                    if (Bank.IsEnabled)
+                    {
+                        Bank.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Bank has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Bank is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    Bank.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Bank has been set to on"));
-                    return;
+                    if (!Bank.IsEnabled)
+                    {
+                        Bank.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Bank has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Bank is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BankConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in BankConsole.Execute: {0}", e));
             }
         }
     }

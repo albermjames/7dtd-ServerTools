@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Login Notice.";
+            return "[ServerTools] - Enable or disable login notice.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-LoginNotice", "loginnotice" };
+            return new string[] { "st-LoginNotice", "ln", "st-ln" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -32,24 +32,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    LoginNotice.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Login notice has been set to off"));
-                    return;
+                    if (LoginNotice.IsEnabled)
+                    {
+                        LoginNotice.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Login notice has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Login notice is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    LoginNotice.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Login notice has been set to on"));
-                    return;
+                    if (!LoginNotice.IsEnabled)
+                    {
+                        LoginNotice.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Login notice has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Login notice is already off"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in LoginNoticeConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in LoginNoticeConsole.Execute: {0}", e.Message));
             }
         }
     }

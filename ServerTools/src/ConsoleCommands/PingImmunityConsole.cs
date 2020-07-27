@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using System.Collections.Generic;
 
 namespace ServerTools
@@ -8,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Add, Remove and View steamids on the PingImmunity list.";
+            return "[ServerTools] - Add, remove and view steam ids on the ping immunity list.";
         }
 
         public override string GetHelp()
@@ -25,7 +24,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-PingImmunity", "pingimmunity", "pi" };
+            return new string[] { "st-PingImmunity", "pi", "st-pi" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -36,73 +35,54 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
                     ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                     if (_cInfo != null)
                     {
-                        string _sql = string.Format("SELECT pingimmunity FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        bool _isHighPingImmune = false;
-                        if (_result.Rows.Count > 0)
+                        if (HighPingKicker.Dict.ContainsKey(_cInfo.playerId))
                         {
-                            bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _isHighPingImmune);
-                        }
-                        if (_isHighPingImmune)
-                        {
-                            SdtdConsole.Instance.Output(string.Format("Can not add Id. {0} is already in the Ping Immunity list.", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Can not add Id. {0} is already in the Ping Immunity list", _params[1]));
                         }
                         else
                         {
-                            if (_result.Rows.Count > 0)
-                            {
-                                _sql = string.Format("UPDATE Players SET pingimmunity = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
-                            }
-                            else
-                            {
-                                _sql = string.Format("INSERT INTO Players (steamid, pingimmunity) VALUES ('{0}', 'true')", _cInfo.playerId);
-                            }
-                            SQL.FastQuery(_sql);
-                            SdtdConsole.Instance.Output(string.Format("Added Id {0} to the Ping Immunity list.", _params[1]));
+                            HighPingKicker.Dict.Add(_cInfo.playerId, _cInfo.playerName);
+                            HighPingKicker.UpdateXml();
+                            SdtdConsole.Instance.Output(string.Format("Added Id {0} to the Ping Immunity list", _params[1]));
                         }
-                        _result.Dispose();
                     }
                     else
                     {
                         if (_params[1].Length != 17)
                         {
-                            SdtdConsole.Instance.Output(string.Format("You can only use a player id or their name if online. Can not add Id: Invalid Id {0}", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Player must be online or when offline use their steam Id which must be 17 numbers in length. Can not add Id: {0}", _params[1]));
                             return;
                         }
                         else
                         {
-                            string _id = SQL.EscapeString(_params[1]);
-                            string _sql = string.Format("SELECT pingimmunity FROM Players WHERE steamid = '{0}'", _id);
-                            DataTable _result = SQL.TQuery(_sql);
-                            bool _isHighPingImmune = false;
-                            if (_result.Rows.Count > 0)
+                            PersistentPlayerData _ppd = PersistentOperations.GetPersistentPlayerDataFromSteamId(_params[1]);
+                            if (_ppd != null)
                             {
-                                bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _isHighPingImmune);
-                            }
-                            if (_isHighPingImmune)
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Can not add Id. {0} is already in the Ping Immunity list.", _params[1]));
-                            }
-                            else
-                            {
-                                if (_result.Rows.Count > 0)
+                                if (HighPingKicker.Dict.ContainsKey(_ppd.PlayerId))
                                 {
-                                    _sql = string.Format("UPDATE Players SET pingimmunity = 'true' WHERE steamid = '{0}'", _id);
+                                    SdtdConsole.Instance.Output(string.Format("Can not add Id. {0} is already in the Ping Immunity list", _ppd.PlayerId));
                                 }
                                 else
                                 {
-                                    _sql = string.Format("INSERT INTO Players (steamid, pingimmunity) VALUES ('{0}', 'true')", _id);
+                                    PlayerDataFile _pdf = PersistentOperations.GetPlayerDataFileFromSteamId(_ppd.PlayerId);
+                                    if (_pdf != null)
+                                    {
+                                        HighPingKicker.Dict.Add(_ppd.PlayerId, _pdf.ecd.entityName);
+                                        HighPingKicker.UpdateXml();
+                                        SdtdConsole.Instance.Output(string.Format("Added Id {0}, with player name {1} to the Ping Immunity list", _params[1], _pdf.ecd.entityName));
+                                    }
                                 }
-                                SQL.FastQuery(_sql);
-                                SdtdConsole.Instance.Output(string.Format("Added Id {0} to the Ping Immunity list.", _params[1]));
                             }
-                            _result.Dispose();
+                            else
+                            {
+                                SdtdConsole.Instance.Output(string.Format("Can not add Id. {0} could not be found", _params[1]));
+                            }
                         }
                     }
                 }
@@ -116,42 +96,36 @@ namespace ServerTools
                     ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                     if (_cInfo != null)
                     {
-                        string _sql = string.Format("SELECT pingimmunity FROM Players WHERE steamid = '{0}' AND pingimmunity = 'true'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        if (_result.Rows.Count > 0)
+                        if (!HighPingKicker.Dict.ContainsKey(_cInfo.playerId))
                         {
-                            _sql = string.Format("UPDATE Players SET pingimmunity = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-                            SQL.FastQuery(_sql);
-                            SdtdConsole.Instance.Output(string.Format("Removed Id {0} from Ping Immunity list.", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Can not remove Id. {0} is not in the Ping Immunity list", _params[1]));
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Id {0} was not found.", _params[1]));
+                            HighPingKicker.Dict.Remove(_cInfo.playerId);
+                            HighPingKicker.UpdateXml();
+                            SdtdConsole.Instance.Output(string.Format("Removed Id {0} from the Ping Immunity list", _params[1]));
                         }
-                        _result.Dispose();
                     }
                     else
                     {
                         if (_params[1].Length != 17)
                         {
-                            SdtdConsole.Instance.Output(string.Format("You can only use a player id or their name if online. Can not remove Id: Invalid Id {0}", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Player must be online to use their name or entity id. Otherwise you must use their steam Id. Can not remove Id: {0}", _params[1]));
+                            return;
                         }
                         else
                         {
-                            string _id = SQL.EscapeString(_params[1]);
-                            string _sql = string.Format("SELECT pingimmunity FROM Players WHERE steamid = '{0}' AND pingimmunity = 'true'", _id);
-                            DataTable _result = SQL.TQuery(_sql);
-                            if (_result.Rows.Count > 0)
+                            if (!HighPingKicker.Dict.ContainsKey(_params[1]))
                             {
-                                _sql = string.Format("UPDATE Players SET pingimmunity = 'false' WHERE steamid = '{0}'", _id);
-                                SQL.FastQuery(_sql);
-                                SdtdConsole.Instance.Output(string.Format("Removed Id {0} from the Ping Immunity list.", _params[1]));
+                                SdtdConsole.Instance.Output(string.Format("Can not remove Id. {0} is not in the Ping Immunity list", _params[1]));
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("Id {0} was not found.", _params[1]));
+                                HighPingKicker.Dict.Remove(_params[1]);
+                                HighPingKicker.UpdateXml();
+                                SdtdConsole.Instance.Output(string.Format("Removed Id {0} from the Ping Immunity list", _params[1]));
                             }
-                            _result.Dispose();
                         }
                     }
                 }
@@ -159,33 +133,34 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
-                    }
-                    string _sql = "SELECT steamid FROM Players WHERE pingimmunity = 'true'";
-                    DataTable _result = SQL.TQuery(_sql);
-                    if (_result.Rows.Count < 1)
-                    {
-                        SdtdConsole.Instance.Output("There are no Ids on the Ping Immunity list.");
                     }
                     else
                     {
-                        foreach (DataRow row in _result.Rows)
+                        if (HighPingKicker.Dict.Count == 0)
                         {
-                            SdtdConsole.Instance.Output(string.Format("{0}", row[0]));
+                            SdtdConsole.Instance.Output("There are no players on the Ping Immunity list.");
+                            return;
                         }
-                        SdtdConsole.Instance.Output(string.Format("Total: {0}", _result.Rows.Count.ToString()));
+                        else
+                        {
+                            SdtdConsole.Instance.Output("High Ping Immunity List");
+                            foreach (KeyValuePair<string, string> _c in HighPingKicker.Dict)
+                            {
+                                SdtdConsole.Instance.Output(string.Format("High Ping List: Player Id {0}, player name {1}", _c.Key, _c.Value));
+                            }
+                        }
                     }
-                    _result.Dispose();
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PingImmunityCommandConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PingImmunityCommandConsole.Execute: {0}", e.Message));
             }
         }
     }
